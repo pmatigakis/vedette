@@ -1,27 +1,18 @@
 from django.contrib import admin
 
-from .models import Project, Event
-
-
-class ProjectAdmin(admin.ModelAdmin):
-    fields = ("title", "public_key", "created_at", "updated_at")
-    readonly_fields = ("public_key", "created_at", "updated_at")
-    list_display = ("title",)
-
-
-admin.site.register(Project, ProjectAdmin)
+from .models import Event
 
 
 class EventAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "view_project_title",
+        "view_project_name",
         "timestamp"
     )
 
     fields = (
         "id",
-        "view_project_title",
+        "view_project_name",
         "timestamp",
         "created_at",
         "updated_at"
@@ -33,9 +24,9 @@ class EventAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
-    @admin.display(ordering='project__title', description="Project")
-    def view_project_title(self, obj):
-        return obj.project.title
+    @admin.display(ordering='project__name', description="Project")
+    def view_project_name(self, obj):
+        return obj.project.name
 
 
 admin.site.register(Event, EventAdmin)
