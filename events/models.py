@@ -1,3 +1,5 @@
+import json
+
 from django.db import models
 
 
@@ -54,3 +56,6 @@ class Event(models.Model):
                 name="ix__event__timestamp"
             )
         ]
+
+    def pretty_json_data(self):
+        return json.dumps(self.data, indent=4)

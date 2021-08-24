@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'projects',
     'events',
-    'api'
+    'api',
+    'web'
 ]
 
 MIDDLEWARE = [
@@ -141,3 +142,5 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = "/accounts/login/"

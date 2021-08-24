@@ -1,0 +1,22 @@
+{% extends 'web/base.html' %}
+
+{% block title %}Vedette - Events - {{ object.id }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+{% endblock %}
+
+{% block content %}
+<h1>Event - {{ object.id }}</h1>
+
+<ul>
+    <li><a href="{% url 'event-list' %}">All events</a></li>
+    <li><a href="{% url 'event-details-json' object.id %}">Download as json</a></li>
+</ul>
+
+<div>
+    <pre><code class="language-json">{{ object.pretty_json_data }}</code></pre>
+</div>
+{% endblock %}
