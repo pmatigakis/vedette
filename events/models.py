@@ -59,3 +59,25 @@ class Event(models.Model):
 
     def pretty_json_data(self):
         return json.dumps(self.data, indent=4)
+
+    def message(self):
+        if (
+                "logentry" in self.data and
+                self.data["logentry"] and
+                self.data["logentry"]["message"]
+        ):
+            return self.data["logentry"]["message"] % tuple(
+                self.data["logentry"]["params"])
+        elif (
+                "exception" in self.data and
+                self.data["exception"] and
+                self.data["exception"]["values"]
+        ):
+            return (
+                f'{self.data["exception"]["values"][0]["type"]} - '
+                f'{self.data["exception"]["values"][0]["value"]}'
+            )
+        elif "message" in self.data and self.data["message"]:
+            return self.data["message"]
+
+        return f"Event - {self.id}"
