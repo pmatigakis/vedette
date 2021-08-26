@@ -1,3 +1,6 @@
+from uuid import UUID
+
+from rest_framework.exceptions import PermissionDenied, NotAuthenticated, NotFound
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -16,17 +19,35 @@ class StoreEvent(APIView):
     renderer_classes = [JSONRenderer]
     content_negotiation_class = IgnoreClientContentNegotiation
 
-    def _process_event(self, project_id, serializer, event_data):
+    def _authenticate(self, request, project_id):
+        if "HTTP_X_SENTRY_AUTH" not in request.META:
+            raise NotAuthenticated(detail="missing authentication")
+
+        auth_components = request.META["HTTP_X_SENTRY_AUTH"].split(" ", 1)
+        if len(auth_components) != 2:
+            raise NotAuthenticated(detail="missing authentication")
+
+        public_key = None
+        for authentication_component in auth_components[1].split(","):
+            auth_values = authentication_component.split("=")
+            if len(auth_values) == 2:
+                key = auth_values[0].strip()
+                if key == "sentry_key":
+                    try:
+                        public_key = UUID(auth_values[1].strip())
+                    except ValueError:
+                        raise NotAuthenticated(detail="invalid authentication")
+                    break
+
         try:
             project = Project.objects.get(pk=project_id)
         except Project.DoesNotExist:
-            return Response(
-                {
-                    "message": "the requested project doesn't exist"
-                },
-                status=status.HTTP_404_NOT_FOUND
-            )
+            raise NotFound(detail="the requested project doesn't exist")
 
+        if project.public_key != public_key:
+            raise PermissionDenied(detail="invalid authentication")
+
+    def _process_event(self, project_id, serializer, event_data):
         if Event.objects.filter(
                 id=serializer.validated_data["event_id"]).exists():
             return Response(
@@ -37,7 +58,7 @@ class StoreEvent(APIView):
             )
 
         event = serializer.save(
-            project=project,
+            project_id=project_id,
             data=event_data
         )
 
@@ -51,6 +72,8 @@ class StoreEvent(APIView):
         )
 
     def post(self, request, project_id, format=None):
+        self._authenticate(request, project_id)
+
         serializer = EventSerializer(data=request.data)
 
         if serializer.is_valid():

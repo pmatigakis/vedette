@@ -13,7 +13,7 @@ class EventSerializer(serializers.Serializer):
             id=validated_data["event_id"],
             timestamp=validated_data["timestamp"],
             platform=validated_data["platform"],
-            project=validated_data["project"],
+            project_id=validated_data["project_id"],
             data=validated_data["data"]
         )
 
