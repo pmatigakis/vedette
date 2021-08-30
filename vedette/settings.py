@@ -144,3 +144,10 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = "/accounts/login/"
+
+# celery settings
+CELERY_TIMEZONE = getenv("CELERY_TIMEZONE", "UTC")
+CELERY_RESULT_BACKEND = environ["CELERY_RESULT_BACKEND"]
+CELERY_BROKER_URL = environ["CELERY_BROKER_URL"]
+# results will expire in 1 hour
+CELERY_RESULT_EXPIRES = getenv("CELERY_RESULT_EXPIRES", 3600)
