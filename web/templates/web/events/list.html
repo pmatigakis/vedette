@@ -7,7 +7,13 @@
 
 <ul>
 {% for event in object_list %}
-    <li><a href="{% url 'event-details' event.id %}">{{ event.message }}</a></li>
+    <li>
+        <ul>
+            <li>{% if event.level %}{{ event.level }} - {% endif %}<a href="{% url 'event-details' event.id %}">{{ event.message }}</a>{%if event.transaction%} - {{ event.transaction }}{% endif %}</li>
+            {% if event.exception_message %}<li>{{ event.exception_message }}</li>{% endif %}
+            <li>{{ event.project.name }} | {{ event.timestamp|date:"r" }}{% if event.logger %} | {{ event.logger }} {% endif %}</li>
+        </ul>
+    </li>
 {% empty %}
     <li>No events yet.</li>
 {% endfor %}

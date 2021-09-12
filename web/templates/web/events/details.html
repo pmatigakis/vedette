@@ -9,13 +9,68 @@
 {% endblock %}
 
 {% block content %}
-<h1>{{ object.message }}</h1>
+<h1>{{ object.message }}{%if event.transaction%} - {{ event.transaction }}{% endif %}</h1>
+
+<ul>
+    <li>{% if event.level %}{{ event.level }} | {% endif %}{% if event.exception_message %}{{ event.exception_message }} | {% endif %}{{ event.project.name }}{% if event.logger %} | {{ event.logger }} {% endif %}</li>
+    <li>Event {{ event.id }} | <a href="{% url 'event-details-json' object.id %}">JSON</a></li>
+    <li>{{ event.timestamp|date:"r" }}</li>
+</ul>
 
 <ul>
     <li><a href="{% url 'event-list' %}">All events</a></li>
-    <li><a href="{% url 'event-details-json' object.id %}">Download as json</a></li>
 </ul>
 
+<h2>Tags</h2>
+<ul>
+    {% if event.user_tag_value %}<li>{{ event.user_tag_value }}{% else %}Unknown user</li>{% endif %}
+    {% if event.runtime_tag_value %}<li>{{ event.runtime_tag_value }}</li>{% endif %}
+    <li>
+        <ul>
+        {% if event.environment %}<li>environment:{{ event.environment }}</li>{% endif %}
+            <li>handled:{{ event.handled }}</li>
+        {% if event.level %}<li>level:{{ event.level }}</li>{% endif %}
+        {% if event.logger %}<li>logger:{{ event.logger }}</li>{% endif %}
+        {% if event.mechanism %}<li>mechanism:{{ event.mechanism }}</li>{% endif %}
+        {% if event.runtime_tag_value %}<li>runtime:{{ event.runtime_tag_value }}</li>{% endif %}
+        {% if event.runtime_name %}<li>runtime-name:{{ event.runtime_name }}</li>{% endif %}
+        {% if event.server_name %}<li>server-name:{{ event.server_name }}</li>{% endif %}
+        {% if event.transaction %}<li>transaction:{{ event.transaction }}</li>{% endif %}
+        {% if event.user_tag_value %}<li>user:{{ event.user_tag_value }}</li>{% endif %}
+        </ul>
+    </li>
+    {% if event.user_defined_tags %}
+    <li>
+        <ul>
+            {% for key, value in event.user_defined_tags.items %}<li>{{ key }}:{{ value }}</li>{% endfor %}
+        </ul>
+    </li>
+    {% endif %}
+</ul>
+
+{% if event.log_message %}
+<h2>Message</h2>
+<p>{{ event.log_message }}</p>
+{% if event.log_params %}
+<ol>
+    {% for param in event.log_params %}
+    <li>{{ param }}</li>
+    {% endfor %}
+</ol>
+{% endif %}
+{% endif %}
+
+{% if event.exception_message %}
+<h2>Exception</h2>
+<h3>{{ event.message }}</h3>
+<p>{{ event.exception_message }}</p>
+<ul>
+    <li>handled:{{ event.handled }}</li>
+    {% if event.mechanism %}<li>mechanism:{{ event.mechanism }}</li>{% endif %}
+</ul>
+{% endif %}
+
+<h3>Raw event</h3>
 <div>
     <pre><code class="language-json">{{ object.pretty_json_data }}</code></pre>
 </div>
