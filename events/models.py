@@ -31,6 +31,47 @@ class Event(models.Model):
         blank=False
     )
 
+    message = models.TextField(
+        null=False,
+        blank=False
+    )
+
+    logger = models.TextField(
+        max_length=512,
+        null=True,
+        blank=True
+    )
+
+    level = models.CharField(
+        max_length=16,
+        null=True,
+        blank=True
+    )
+
+    transaction = models.TextField(
+        max_length=128,
+        null=True,
+        blank=True
+    )
+
+    environment = models.CharField(
+        max_length=128,
+        null=True,
+        blank=True
+    )
+
+    server_name = models.CharField(
+        max_length=128,
+        null=True,
+        blank=True
+    )
+
+    resolved = models.BooleanField(
+        blank=False,
+        null=False,
+        default=False
+    )
+
     data = models.JSONField(blank=False, null=False)
 
     created_at = models.DateTimeField(
@@ -43,6 +84,11 @@ class Event(models.Model):
         auto_now=True,
         blank=False,
         null=False
+    )
+
+    resolved_at = models.DateTimeField(
+        blank=True,
+        null=True
     )
 
     class Meta:
@@ -60,33 +106,33 @@ class Event(models.Model):
     def pretty_json_data(self):
         return json.dumps(self.data, indent=4)
 
-    def message(self):
-        if (
-            "exception" in self.data and
-            self.data["exception"] and
-            self.data["exception"]["values"]
-        ):
-            return self.data["exception"]["values"][0]["type"]
-        elif (
-            "logentry" in self.data and
-            self.data["logentry"] and
-            self.data["logentry"]["message"]
-        ):
-            return self.data["logentry"]["message"] % tuple(
-                self.data["logentry"]["params"] or [])
-        elif "message" in self.data and self.data["message"]:
-            return self.data["message"]
+    # def message(self):
+    #     if (
+    #         "exception" in self.data and
+    #         self.data["exception"] and
+    #         self.data["exception"]["values"]
+    #     ):
+    #         return self.data["exception"]["values"][0]["type"]
+    #     elif (
+    #         "logentry" in self.data and
+    #         self.data["logentry"] and
+    #         self.data["logentry"]["message"]
+    #     ):
+    #         return self.data["logentry"]["message"] % tuple(
+    #             self.data["logentry"]["params"] or [])
+    #     elif "message" in self.data and self.data["message"]:
+    #         return self.data["message"]
+    #
+    #     return f"Event - {self.id}"
 
-        return f"Event - {self.id}"
+    # def logger(self):
+    #     return self.data.get("logger")
 
-    def logger(self):
-        return self.data.get("logger")
+    # def level(self):
+    #     return self.data.get("level")
 
-    def level(self):
-        return self.data.get("level")
-
-    def transaction(self):
-        return self.data.get("transaction")
+    # def transaction(self):
+    #     return self.data.get("transaction")
 
     def exception_message(self):
         if (
@@ -123,8 +169,8 @@ class Event(models.Model):
     def user_defined_tags(self):
         return self.data.get("tags", {})
 
-    def environment(self):
-        return self.data.get("environment")
+    # def environment(self):
+    #     return self.data.get("environment")
 
     def handled(self):
         exceptions = self.data.get("exception", {}).get("values")
@@ -146,8 +192,8 @@ class Event(models.Model):
     def runtime_name(self):
         return self.data.get("contexts", {}).get("runtime", {}).get("name")
 
-    def server_name(self):
-        return self.data.get("server_name")
+    # def server_name(self):
+    #     return self.data.get("server_name")
 
     def log_message(self):
         message = self.data.get("logentry", {}).get("message")

@@ -7,13 +7,16 @@ class EventAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "view_project_name",
-        "timestamp"
+        "timestamp",
+        "resolved"
     )
 
     fields = (
         "id",
         "view_project_name",
+        "message",
         "timestamp",
+        "resolved",
         "created_at",
         "updated_at"
     )
