@@ -3,6 +3,12 @@ from rest_framework import serializers
 from events.models import Event
 
 
+class LogentrySerializer(serializers.Serializer):
+    message = serializers.CharField(required=True)
+    # this param is an array but we will parse it as json
+    params = serializers.JSONField(required=False)
+
+
 class EventSerializer(serializers.Serializer):
     event_id = serializers.UUIDField(required=True)
     timestamp = serializers.DateTimeField(required=True)
@@ -12,6 +18,7 @@ class EventSerializer(serializers.Serializer):
     transaction = serializers.CharField(required=False, allow_null=True)
     environment = serializers.CharField(required=False, allow_null=True)
     server_name = serializers.CharField(required=False, allow_null=True)
+    logentry = LogentrySerializer(required=False)
 
     def _message(self, data):
         if (
@@ -32,6 +39,47 @@ class EventSerializer(serializers.Serializer):
 
         return f"Event - {data['event_id']}"
 
+    def _log_message(self, logentry):
+        if not logentry:
+            return None
+
+        message = logentry["message"]
+        if message:
+            return message % tuple(logentry.get("params", []))
+
+        return None
+
+    def _handled(self, data):
+        exceptions = data.get("exception", {}).get("values")
+        if exceptions and exceptions[0]["mechanism"]:
+            return exceptions[0]["mechanism"].get("handled") or False
+
+        return False
+
+    def _mechanism(self, data):
+        if "exception" in data:
+            exception_values = data["exception"].get("values", [])
+            if exception_values:
+                return exception_values[0].get("mechanism", {}).get("type")
+        elif "logentry" in data:
+            return "logging"
+
+        return None
+
+    def _exception_message(self, data):
+        if (
+            "exception" in data and
+            data["exception"] and
+            data["exception"]["values"]
+        ):
+            message = data["exception"]["values"][0]["value"]
+            if not isinstance(message, str):
+                message = str(message)
+
+            return message
+
+        return None
+
     def create(self, validated_data):
         return Event(
             id=validated_data["event_id"],
@@ -44,6 +92,10 @@ class EventSerializer(serializers.Serializer):
             transaction=validated_data.get("transaction"),
             environment=validated_data.get("environment"),
             server_name=validated_data.get("server_name"),
+            log_message=self._log_message(validated_data.get("logentry")),
+            handled=self._handled(validated_data["data"]),
+            mechanism=self._mechanism(validated_data["data"]),
+            exception_message=self._exception_message(validated_data["data"]),
             data=validated_data["data"]
         )
 

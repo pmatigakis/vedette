@@ -36,7 +36,7 @@ class Event(models.Model):
         blank=False
     )
 
-    logger = models.TextField(
+    logger = models.CharField(
         max_length=512,
         null=True,
         blank=True
@@ -48,7 +48,7 @@ class Event(models.Model):
         blank=True
     )
 
-    transaction = models.TextField(
+    transaction = models.CharField(
         max_length=128,
         null=True,
         blank=True
@@ -62,6 +62,28 @@ class Event(models.Model):
 
     server_name = models.CharField(
         max_length=128,
+        null=True,
+        blank=True
+    )
+
+    log_message = models.TextField(
+        null=True,
+        blank=True
+    )
+
+    handled = models.BooleanField(
+        blank=False,
+        null=False,
+        default=False
+    )
+
+    mechanism = models.CharField(
+        max_length=32,
+        null=True,
+        blank=True
+    )
+
+    exception_message = models.TextField(
         null=True,
         blank=True
     )
@@ -134,13 +156,13 @@ class Event(models.Model):
     # def transaction(self):
     #     return self.data.get("transaction")
 
-    def exception_message(self):
-        if (
-            "exception" in self.data and
-            self.data["exception"] and
-            self.data["exception"]["values"]
-        ):
-            return self.data["exception"]["values"][0]["value"]
+    # def exception_message(self):
+    #     if (
+    #         "exception" in self.data and
+    #         self.data["exception"] and
+    #         self.data["exception"]["values"]
+    #     ):
+    #         return self.data["exception"]["values"][0]["value"]
 
     def user_tag_value(self):
         user_data = self.data.get("user", {})
@@ -172,22 +194,22 @@ class Event(models.Model):
     # def environment(self):
     #     return self.data.get("environment")
 
-    def handled(self):
-        exceptions = self.data.get("exception", {}).get("values")
-        if exceptions and exceptions[0]["mechanism"]:
-            return exceptions[0]["mechanism"].get("handled") or False
+    # def handled(self):
+    #     exceptions = self.data.get("exception", {}).get("values")
+    #     if exceptions and exceptions[0]["mechanism"]:
+    #         return exceptions[0]["mechanism"].get("handled") or False
+    #
+    #     return False
 
-        return False
-
-    def mechanism(self):
-        if "exception" in self.data:
-            exception_values = self.data["exception"].get("values", [])
-            if exception_values:
-                return exception_values[0].get("mechanism", {}).get("type")
-        elif "logentry" in self.data:
-            return "logging"
-
-        return None
+    # def mechanism(self):
+    #     if "exception" in self.data:
+    #         exception_values = self.data["exception"].get("values", [])
+    #         if exception_values:
+    #             return exception_values[0].get("mechanism", {}).get("type")
+    #     elif "logentry" in self.data:
+    #         return "logging"
+    #
+    #     return None
 
     def runtime_name(self):
         return self.data.get("contexts", {}).get("runtime", {}).get("name")
@@ -195,12 +217,12 @@ class Event(models.Model):
     # def server_name(self):
     #     return self.data.get("server_name")
 
-    def log_message(self):
-        message = self.data.get("logentry", {}).get("message")
-        if message:
-            return message % tuple(self.data.get("logentry", {}).get("params", []))
-
-        return None
+    # def log_message(self):
+    #     message = self.data.get("logentry", {}).get("message")
+    #     if message:
+    #         return message % tuple(self.data.get("logentry", {}).get("params", []))
+    #
+    #     return None
 
     def log_params(self):
         return self.data.get("logentry", {}).get("params", [])
