@@ -88,6 +88,23 @@ class Event(models.Model):
         blank=True
     )
 
+    runtime_name = models.CharField(
+        max_length=32,
+        null=True,
+        blank=True
+    )
+
+    runtime_version = models.CharField(
+        max_length=64,
+        null=True,
+        blank=True
+    )
+
+    runtime_build = models.TextField(
+        null=True,
+        blank=True
+    )
+
     resolved = models.BooleanField(
         blank=False,
         null=False,
@@ -173,17 +190,30 @@ class Event(models.Model):
                 user_data.get("ip_address")
         )
 
-    def runtime_tag_value(self):
-        runtime = self.data.get("contexts", {}).get("runtime", {})
+    # def runtime_tag_value(self):
+    #     runtime = self.data.get("contexts", {}).get("runtime", {})
+    #
+    #     components = []
+    #     if "name" in runtime:
+    #         components.append(runtime["name"])
+    #     if "version" in runtime:
+    #         components.append(runtime["version"])
+    #
+    #     runtime_tag = "-".join(components)
+    #     if not runtime_tag:
+    #         runtime_tag = None
+    #
+    #     return runtime_tag
 
+    def runtime_tag_value(self):
         components = []
-        if "name" in runtime:
-            components.append(runtime["name"])
-        if "version" in runtime:
-            components.append(runtime["version"])
+        if self.runtime_name:
+            components.append(self.runtime_name)
+        if self.runtime_version:
+            components.append(self.runtime_version)
 
         runtime_tag = "-".join(components)
-        if not  runtime_tag:
+        if not runtime_tag:
             runtime_tag = None
 
         return runtime_tag
@@ -211,8 +241,8 @@ class Event(models.Model):
     #
     #     return None
 
-    def runtime_name(self):
-        return self.data.get("contexts", {}).get("runtime", {}).get("name")
+    # def runtime_name(self):
+    #     return self.data.get("contexts", {}).get("runtime", {}).get("name")
 
     # def server_name(self):
     #     return self.data.get("server_name")

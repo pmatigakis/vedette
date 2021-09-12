@@ -80,6 +80,15 @@ class EventSerializer(serializers.Serializer):
 
         return None
 
+    def _runtime_name(self, data):
+        return data.get("contexts", {}).get("runtime", {}).get("name")
+
+    def _runtime_version(self, data):
+        return data.get("contexts", {}).get("runtime", {}).get("version")
+
+    def _runtime_build(self, data):
+        return data.get("contexts", {}).get("runtime", {}).get("build")
+
     def create(self, validated_data):
         return Event(
             id=validated_data["event_id"],
@@ -96,6 +105,9 @@ class EventSerializer(serializers.Serializer):
             handled=self._handled(validated_data["data"]),
             mechanism=self._mechanism(validated_data["data"]),
             exception_message=self._exception_message(validated_data["data"]),
+            runtime_name=self._runtime_name(validated_data["data"]),
+            runtime_version=self._runtime_version(validated_data["data"]),
+            runtime_build=self._runtime_build(validated_data["data"]),
             data=validated_data["data"]
         )
 
