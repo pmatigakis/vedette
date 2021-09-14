@@ -2,10 +2,7 @@ import json
 
 from django.db import models
 
-
-SUPPORTED_PLATFORMS = (
-    ("python", "Python"),
-)
+from .constants import SUPPORTED_PLATFORMS, LOG_LEVELS
 
 
 class Event(models.Model):
@@ -36,14 +33,14 @@ class Event(models.Model):
         blank=False
     )
 
-    logger = models.CharField(
-        max_length=512,
+    logger = models.TextField(
         null=True,
         blank=True
     )
 
     level = models.CharField(
-        max_length=16,
+        choices=LOG_LEVELS,
+        max_length=8,
         null=True,
         blank=True
     )
@@ -55,13 +52,13 @@ class Event(models.Model):
     )
 
     environment = models.CharField(
-        max_length=128,
+        max_length=256,
         null=True,
         blank=True
     )
 
     server_name = models.CharField(
-        max_length=128,
+        max_length=256,
         null=True,
         blank=True
     )
@@ -89,7 +86,7 @@ class Event(models.Model):
     )
 
     runtime_name = models.CharField(
-        max_length=32,
+        max_length=64,
         null=True,
         blank=True
     )
