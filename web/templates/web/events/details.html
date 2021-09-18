@@ -23,7 +23,7 @@
 
 <h2>Tags</h2>
 <ul>
-    {% if event.user_tag_value %}<li>{{ event.user_tag_value }}{% else %}Unknown user</li>{% endif %}
+    {% if event.user %}<li>{{ event.user }}{% else %}Unknown user</li>{% endif %}
     {% if event.runtime_tag_value %}<li>{{ event.runtime_tag_value }}</li>{% endif %}
     <li>
         <ul>
@@ -36,7 +36,7 @@
         {% if event.runtime_name %}<li>runtime-name:{{ event.runtime_name }}</li>{% endif %}
         {% if event.server_name %}<li>server-name:{{ event.server_name }}</li>{% endif %}
         {% if event.transaction %}<li>transaction:{{ event.transaction }}</li>{% endif %}
-        {% if event.user_tag_value %}<li>user:{{ event.user_tag_value }}</li>{% endif %}
+        {% if event.user %}<li>user:{{ event.user }}</li>{% endif %}
         </ul>
     </li>
     {% if event.user_defined_tags %}
@@ -72,6 +72,6 @@
 
 <h3>Raw event</h3>
 <div>
-    <pre><code class="language-json">{{ object.pretty_json_data }}</code></pre>
+    <pre><code class="language-json">{{ object.raw_event.pretty_json_data }}</code></pre>
 </div>
 {% endblock %}

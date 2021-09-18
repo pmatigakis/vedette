@@ -1,3 +1,5 @@
+from celery import chain
+
 from rest_framework.exceptions import NotAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -7,8 +9,8 @@ from rest_framework.renderers import JSONRenderer
 from events.negotiation import IgnoreClientContentNegotiation
 from events.parsers import GzippedJSONParser
 
-from .serializers import EventSerializer
-from .tasks import capture_event
+from .serializers import RawEventSerializer
+from .tasks import capture_event, process_event
 
 
 class StoreEvent(APIView):
@@ -44,10 +46,14 @@ class StoreEvent(APIView):
     def post(self, request, project_id, format=None):
         public_key = self._extract_public_key(request)
 
-        serializer = EventSerializer(data=request.data)
+        serializer = RawEventSerializer(data=request.data)
 
         if serializer.is_valid():
-            capture_event.delay(project_id, public_key, request.data)
+            event_processing_clain = chain(
+                capture_event.s(project_id, public_key, request.data),
+                process_event.s()
+            )
+            event_processing_clain.delay()
 
             return Response(
                 {

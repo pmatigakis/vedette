@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 
-from events.models import Event
+from events.models import RawEvent, Event
 
 
 class EventListView(LoginRequiredMixin, ListView):
@@ -22,6 +22,6 @@ class EventDetailsView(LoginRequiredMixin, DetailView):
 
 @login_required
 def event_details_json(request, event_id):
-    event = get_object_or_404(Event, pk=event_id)
+    raw_event = get_object_or_404(RawEvent, pk=event_id)
 
-    return JsonResponse(event.data)
+    return JsonResponse(raw_event.data)

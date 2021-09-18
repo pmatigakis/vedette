@@ -1,6 +1,22 @@
 from rest_framework import serializers
 
-from events.models import Event
+from events.models import Event, RawEvent
+
+
+class RawEventSerializer(serializers.Serializer):
+    event_id = serializers.UUIDField(required=True)
+    timestamp = serializers.DateTimeField(required=True)
+    platform = serializers.CharField(max_length=32, required=True)
+
+    def create(self, validated_data):
+        return RawEvent(
+            id=validated_data["event_id"],
+            project_id=validated_data["project_id"],
+            data=validated_data["data"]
+        )
+
+    def update(self, instance, validated_data):
+        raise RuntimeError("it is not allowed to update a raw event")
 
 
 class LogentrySerializer(serializers.Serializer):
@@ -89,26 +105,37 @@ class EventSerializer(serializers.Serializer):
     def _runtime_build(self, data):
         return data.get("contexts", {}).get("runtime", {}).get("build")
 
+    def _user(self, data):
+        user_data = data.get("user", {})
+
+        return (
+                user_data.get("id") or
+                user_data.get("username") or
+                user_data.get("email") or
+                user_data.get("ip_address")
+        )
+
     def create(self, validated_data):
         return Event(
             id=validated_data["event_id"],
+            project=validated_data["project"],
+            raw_event_id=validated_data["raw_event"].id,
             timestamp=validated_data["timestamp"],
             platform=validated_data["platform"],
-            project_id=validated_data["project_id"],
-            message=self._message(validated_data["data"]),
+            message=self._message(validated_data["raw_event"].data),
             logger=validated_data.get("logger"),
             level=validated_data.get("level"),
             transaction=validated_data.get("transaction"),
             environment=validated_data.get("environment"),
             server_name=validated_data.get("server_name"),
             log_message=self._log_message(validated_data.get("logentry")),
-            handled=self._handled(validated_data["data"]),
-            mechanism=self._mechanism(validated_data["data"]),
-            exception_message=self._exception_message(validated_data["data"]),
-            runtime_name=self._runtime_name(validated_data["data"]),
-            runtime_version=self._runtime_version(validated_data["data"]),
-            runtime_build=self._runtime_build(validated_data["data"]),
-            data=validated_data["data"]
+            handled=self._handled(validated_data["raw_event"].data),
+            mechanism=self._mechanism(validated_data["raw_event"].data),
+            exception_message=self._exception_message(validated_data["raw_event"].data),
+            runtime_name=self._runtime_name(validated_data["raw_event"].data),
+            runtime_version=self._runtime_version(validated_data["raw_event"].data),
+            runtime_build=self._runtime_build(validated_data["raw_event"].data),
+            user=self._user(validated_data["raw_event"].data)
         )
 
     def update(self, instance, validated_data):

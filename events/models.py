@@ -5,6 +5,46 @@ from django.db import models
 from .constants import SUPPORTED_PLATFORMS, LOG_LEVELS
 
 
+class RawEvent(models.Model):
+    id = models.UUIDField(
+        blank=False,
+        null=False,
+        primary_key=True
+    )
+
+    project = models.ForeignKey(
+        "projects.Project",
+        blank=False,
+        null=False,
+        on_delete=models.CASCADE
+    )
+
+    data = models.JSONField(blank=False, null=False)
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        blank=False,
+        null=False
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        blank=False,
+        null=False
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=["project_id"],
+                name="ix__raw_event__project_id"
+            )
+        ]
+
+    def pretty_json_data(self):
+        return json.dumps(self.data, indent=4)
+
+
 class Event(models.Model):
     id = models.UUIDField(
         blank=False,
@@ -17,6 +57,14 @@ class Event(models.Model):
         blank=False,
         null=False,
         on_delete=models.CASCADE
+    )
+
+    raw_event = models.OneToOneField(
+        "RawEvent",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="event"
     )
 
     timestamp = models.DateTimeField(null=False, blank=False)
@@ -102,13 +150,16 @@ class Event(models.Model):
         blank=True
     )
 
+    user = models.TextField(
+        null=True,
+        blank=True
+    )
+
     resolved = models.BooleanField(
         blank=False,
         null=False,
         default=False
     )
-
-    data = models.JSONField(blank=False, null=False)
 
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -131,16 +182,13 @@ class Event(models.Model):
         indexes = [
             models.Index(
                 fields=["project_id"],
-                name="ix__event__project_id__project"
+                name="ix__event__project_id"
             ),
             models.Index(
                 fields=["timestamp"],
                 name="ix__event__timestamp"
             )
         ]
-
-    def pretty_json_data(self):
-        return json.dumps(self.data, indent=4)
 
     # def message(self):
     #     if (
@@ -178,14 +226,14 @@ class Event(models.Model):
     #     ):
     #         return self.data["exception"]["values"][0]["value"]
 
-    def user_tag_value(self):
-        user_data = self.data.get("user", {})
-        return (
-                user_data.get("id") or
-                user_data.get("username") or
-                user_data.get("email") or
-                user_data.get("ip_address")
-        )
+    # def user_tag_value(self):
+    #     user_data = self.raw_event.data.get("user", {})
+    #     return (
+    #             user_data.get("id") or
+    #             user_data.get("username") or
+    #             user_data.get("email") or
+    #             user_data.get("ip_address")
+    #     )
 
     # def runtime_tag_value(self):
     #     runtime = self.data.get("contexts", {}).get("runtime", {})
@@ -216,7 +264,7 @@ class Event(models.Model):
         return runtime_tag
 
     def user_defined_tags(self):
-        return self.data.get("tags", {})
+        return self.raw_event.data.get("tags", {})
 
     # def environment(self):
     #     return self.data.get("environment")
@@ -252,4 +300,4 @@ class Event(models.Model):
     #     return None
 
     def log_params(self):
-        return self.data.get("logentry", {}).get("params", [])
+        return self.raw_event.data.get("logentry", {}).get("params", [])
