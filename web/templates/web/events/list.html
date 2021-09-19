@@ -102,6 +102,9 @@
                           Event
                       </th>
                       <th style="width: 8%" class="text-center">
+                          Level
+                      </th>
+                      <th style="width: 8%" class="text-center">
                           Status
                       </th>
                       <th style="width: 20%">
@@ -121,6 +124,19 @@
                           {% endif %}
                           <br/>
                           <small>Occurred at {{ event.timestamp|date:"r" }} in {{ event.project.name }}</small>
+                      </td>
+                      <td class="project-state">
+                          {% if event.level %}
+                              {% if event.level == "error" or event.level == "fatal" %}
+                                  <span class="badge badge-danger">{{ event.level }}</span>
+                              {% elif event.level == "warning" %}
+                                  <span class="badge badge-warning">{{ event.level }}</span>
+                              {% else %}
+                                  <span class="badge badge-primary">{{ event.level }}</span>
+                              {% endif %}
+                          {% else %}
+                              <span class="badge badge-secondary">Undefined</span>
+                          {% endif %}
                       </td>
                       <td class="project-state">
                           {% if event.resolved %}
