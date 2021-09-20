@@ -20,6 +20,11 @@ class EventDetailsView(LoginRequiredMixin, DetailView):
     template_name = "web/events/details.html"
 
 
+class EventDataView(LoginRequiredMixin, DetailView):
+    model = Event
+    template_name = "web/events/data.html"
+
+
 @login_required
 def event_details_json(request, event_id):
     raw_event = get_object_or_404(RawEvent, pk=event_id)
