@@ -12,7 +12,8 @@ from events.models import RawEvent
 from projects.models import Project
 from .serializers import RawEventSerializer, EventSerializer
 from .exceptions import (
-    InvalidProjectPublicKey, InvalidEventData, EventAlreadyProcessed
+    InvalidProjectPublicKey, InvalidEventData, EventAlreadyProcessed,
+    InvalidSentryDsn
 )
 
 
@@ -95,7 +96,8 @@ def forward_to_sentry(project_id, event_data):
 
     if project.sentry_dsn is None:
         logger.info(
-            "the project with id '%s' doesn't have a sentry DSN", project_id
+            "not forwarding event because the project with id '%s' doesn't "
+            "have a sentry DSN", project_id
         )
         return
 
@@ -105,8 +107,21 @@ def forward_to_sentry(project_id, event_data):
         raise InvalidEventData()
 
     parsed_dsn = urlparse(project.sentry_dsn)
-    public_key, host = parsed_dsn.netloc.split("@")
+    if not all([parsed_dsn.scheme, parsed_dsn.netloc, parsed_dsn.path]):
+        logger.error("invalid sentry dsn %s", project.sentry_dsn)
+        raise InvalidSentryDsn()
+
+    try:
+        public_key, host = parsed_dsn.netloc.split("@")
+    except ValueError:
+        logger.error("invalid sentry dsn %s", project.sentry_dsn)
+        raise InvalidSentryDsn()
+
     project_id = parsed_dsn.path[1:]
+    if not project_id:
+        logger.error("invalid project id in sentry dsn %s", project.sentry_dsn)
+        raise InvalidSentryDsn()
+
     url = f"{parsed_dsn.scheme}://{public_key}@{host}/api/{project_id}/store/"
     compressed_payload = base64.b64encode(
         zlib.compress(json.dumps(event_data).encode())

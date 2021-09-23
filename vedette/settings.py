@@ -149,5 +149,5 @@ LOGIN_URL = "/accounts/login/"
 CELERY_TIMEZONE = getenv("CELERY_TIMEZONE", "UTC")
 CELERY_RESULT_BACKEND = environ["CELERY_RESULT_BACKEND"]
 CELERY_BROKER_URL = environ["CELERY_BROKER_URL"]
-# results will expire in 1 hour
-CELERY_RESULT_EXPIRES = getenv("CELERY_RESULT_EXPIRES", 3600)
+# results will expire in 5 minutes
+CELERY_RESULT_EXPIRES = int(getenv("CELERY_RESULT_EXPIRES", 60 * 5))

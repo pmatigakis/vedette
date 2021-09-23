@@ -12,3 +12,7 @@ class InvalidEventData(ApiError):
 
 class EventAlreadyProcessed(ApiError):
     pass
+
+
+class InvalidSentryDsn(ApiError):
+    pass

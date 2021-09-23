@@ -43,21 +43,31 @@ class StoreEvent(APIView):
 
         return public_key
 
+    def _create_event_processing_task(
+            self,
+            project_id,
+            public_key,
+            event_data
+    ):
+        event_processing_clain = chain(
+            capture_event.s(project_id, public_key, event_data),
+            process_event.s()
+        )
+
+        return group(
+            event_processing_clain,
+            forward_to_sentry.s(project_id, event_data)
+        )
+
     def post(self, request, project_id, format=None):
         public_key = self._extract_public_key(request)
 
         serializer = RawEventSerializer(data=request.data)
 
         if serializer.is_valid():
-            event_processing_clain = chain(
-                capture_event.s(project_id, public_key, request.data),
-                process_event.s()
-            )
-            processing_graph = group(
-                event_processing_clain,
-                forward_to_sentry.s(project_id, request.data)
-            )
-            processing_graph.delay()
+            event_processing_task = self._create_event_processing_task(
+                project_id, public_key, request.data)
+            event_processing_task.delay()
 
             return Response(
                 {
