@@ -94,7 +94,7 @@ def forward_to_sentry(project_id, event_data):
         logger.warning("a project with id '%s' doesn't exist", project_id)
         raise e
 
-    if project.sentry_dsn is None:
+    if not project.sentry_dsn:
         logger.info(
             "not forwarding event because the project with id '%s' doesn't "
             "have a sentry DSN", project_id
