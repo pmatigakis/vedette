@@ -31,7 +31,7 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'event-list' %}">
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
@@ -43,7 +43,7 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item">
-                <a class="nav-link" href="index.html"><i class="fas fa-fw fa-tachometer-alt"></i><span>Events</span></a>
+                <a class="nav-link" href="{% url 'event-list' %}"><i class="fas fa-fw fa-tachometer-alt"></i><span>Events</span></a>
             </li>
 
             <!-- Divider -->
@@ -76,9 +76,9 @@
 
                         <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            <a class="nav-link dropdown-toggle" href="{% url 'admin:auth_user_change' user.id %}" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ user.username }}</span>
                                 <img class="img-profile rounded-circle" src="{% static 'img/undraw_profile.svg' %}">
                             </a>
                             <!-- Dropdown - User Information -->
@@ -183,6 +183,19 @@
               <ul class="list-unstyled">
                 <li>
                   <a href="{% url 'event-details-json' object.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>raw-event.json</a>
+                </li>
+              </ul>
+
+              <h5 class="mt-5 text-muted">Admin</h5>
+              <ul class="list-unstyled">
+                <li>
+                  <a href="{% url 'admin:events_event_change' event.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Event</a>
+                </li>
+                <li>
+                  <a href="{% url 'admin:events_rawevent_change' event.raw_event.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Raw Event</a>
+                </li>
+                <li>
+                  <a href="{% url 'admin:projects_project_change' event.project.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Project</a>
                 </li>
               </ul>
             </div>
