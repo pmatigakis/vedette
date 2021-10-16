@@ -92,10 +92,7 @@ DATABASES = {
         'PORT': int(getenv("DB_PORT", 5432)),
         'USER': environ["DB_USERNAME"],
         'PASSWORD': environ["DB_PASSWORD"],
-        'NAME': environ["DB_NAME"],
-        'TEST': {
-            'NAME': getenv("TEST_DB_NAME", 'vedette_test'),
-        },
+        'NAME': environ["DB_NAME"]
     }
 }
 
