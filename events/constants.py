@@ -1,7 +1,5 @@
 PYTHON_PLATFORM = "python"
-SUPPORTED_PLATFORMS = (
-    (PYTHON_PLATFORM, "Python"),
-)
+SUPPORTED_PLATFORMS = ((PYTHON_PLATFORM, "Python"),)
 
 LOG_LEVEL_DEBUG = "debug"
 LOG_LEVEL_INFO = "info"
@@ -15,5 +13,5 @@ LOG_LEVELS = (
     (LOG_LEVEL_ERROR, "Error"),
     (LOG_LEVEL_FATAL, "Fatal"),
     (LOG_LEVEL_SAMPLE, "Sample"),
-    (LOG_LEVEL_WARNING, "Warning")
+    (LOG_LEVEL_WARNING, "Warning"),
 )

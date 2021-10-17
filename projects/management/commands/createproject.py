@@ -5,10 +5,7 @@ from projects.models import Project
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument(
-            "project-name",
-            help='The project name'
-        )
+        parser.add_argument("project-name", help="The project name")
 
     def handle(self, *args, **options):
         name = options["project-name"]

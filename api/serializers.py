@@ -12,7 +12,7 @@ class RawEventSerializer(serializers.Serializer):
         return RawEvent(
             id=validated_data["event_id"],
             project_id=validated_data["project_id"],
-            data=validated_data["data"]
+            data=validated_data["data"],
         )
 
     def update(self, instance, validated_data):
@@ -38,18 +38,19 @@ class EventSerializer(serializers.Serializer):
 
     def _message(self, data):
         if (
-            "exception" in data and
-            data["exception"] and
-            data["exception"]["values"]
+            "exception" in data
+            and data["exception"]
+            and data["exception"]["values"]
         ):
             return data["exception"]["values"][0]["type"]
         elif (
-            "logentry" in data and
-            data["logentry"] and
-            data["logentry"]["message"]
+            "logentry" in data
+            and data["logentry"]
+            and data["logentry"]["message"]
         ):
             return data["logentry"]["message"] % tuple(
-                data["logentry"]["params"] or [])
+                data["logentry"]["params"] or []
+            )
         elif "message" in data and data["message"]:
             return data["message"]
 
@@ -84,9 +85,9 @@ class EventSerializer(serializers.Serializer):
 
     def _exception_message(self, data):
         if (
-            "exception" in data and
-            data["exception"] and
-            data["exception"]["values"]
+            "exception" in data
+            and data["exception"]
+            and data["exception"]["values"]
         ):
             message = data["exception"]["values"][0]["value"]
             if not isinstance(message, str):
@@ -109,10 +110,10 @@ class EventSerializer(serializers.Serializer):
         user_data = data.get("user", {})
 
         return (
-                user_data.get("id") or
-                user_data.get("username") or
-                user_data.get("email") or
-                user_data.get("ip_address")
+            user_data.get("id")
+            or user_data.get("username")
+            or user_data.get("email")
+            or user_data.get("ip_address")
         )
 
     def create(self, validated_data):
@@ -131,11 +132,17 @@ class EventSerializer(serializers.Serializer):
             log_message=self._log_message(validated_data.get("logentry")),
             handled=self._handled(validated_data["raw_event"].data),
             mechanism=self._mechanism(validated_data["raw_event"].data),
-            exception_message=self._exception_message(validated_data["raw_event"].data),
+            exception_message=self._exception_message(
+                validated_data["raw_event"].data
+            ),
             runtime_name=self._runtime_name(validated_data["raw_event"].data),
-            runtime_version=self._runtime_version(validated_data["raw_event"].data),
-            runtime_build=self._runtime_build(validated_data["raw_event"].data),
-            user=self._user(validated_data["raw_event"].data)
+            runtime_version=self._runtime_version(
+                validated_data["raw_event"].data
+            ),
+            runtime_build=self._runtime_build(
+                validated_data["raw_event"].data
+            ),
+            user=self._user(validated_data["raw_event"].data),
         )
 
     def update(self, instance, validated_data):

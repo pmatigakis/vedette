@@ -17,13 +17,13 @@ class ProcessEventTests(TestCase):
         self.event_data = {
             "event_id": "5d167e7d21004858ae9dfba46d370377",
             "timestamp": "2021-08-22T18:26:04.994971Z",
-            "platform": "python"
+            "platform": "python",
         }
 
         self.raw_event = RawEvent(
             id=UUID(self.event_data["event_id"]),
             project=self.project,
-            data=self.event_data
+            data=self.event_data,
         )
         self.raw_event.save()
 

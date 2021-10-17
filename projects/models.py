@@ -10,30 +10,17 @@ class Project(models.Model):
         null=False,
         blank=False,
         unique=True,
-        validators=(MinLengthValidator(limit_value=1),)
+        validators=(MinLengthValidator(limit_value=1),),
     )
 
     public_key = models.UUIDField(
-        default=uuid4,
-        blank=False,
-        null=False,
-        unique=True
+        default=uuid4, blank=False, null=False, unique=True
     )
 
-    sentry_dsn = models.URLField(
-        max_length=256,
-        null=True,
-        blank=True
-    )
+    sentry_dsn = models.URLField(max_length=256, null=True, blank=True)
 
     created_at = models.DateTimeField(
-        auto_now_add=True,
-        blank=False,
-        null=False
+        auto_now_add=True, blank=False, null=False
     )
 
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        blank=False,
-        null=False
-    )
+    updated_at = models.DateTimeField(auto_now=True, blank=False, null=False)

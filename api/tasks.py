@@ -12,8 +12,10 @@ from events.models import RawEvent
 from projects.models import Project
 from .serializers import RawEventSerializer, EventSerializer
 from .exceptions import (
-    InvalidProjectPublicKey, InvalidEventData, EventAlreadyProcessed,
-    InvalidSentryDsn
+    InvalidProjectPublicKey,
+    InvalidEventData,
+    EventAlreadyProcessed,
+    InvalidSentryDsn,
 )
 
 
@@ -33,13 +35,19 @@ def capture_event(project_id, public_key, event_data):
     try:
         public_key_uuid = UUID(public_key)
     except ValueError as e:
-        logger.warning("the public key given is not a a valid uuid for "
-                       "project with id '%s'", project_id)
+        logger.warning(
+            "the public key given is not a a valid uuid for "
+            "project with id '%s'",
+            project_id,
+        )
         raise InvalidProjectPublicKey() from e
 
     if project.public_key != public_key_uuid:
-        logger.warning("the public key doesn't match the public key of "
-                       "project with id '%s'", project_id)
+        logger.warning(
+            "the public key doesn't match the public key of "
+            "project with id '%s'",
+            project_id,
+        )
         raise InvalidProjectPublicKey()
 
     serializer = RawEventSerializer(data=event_data)
@@ -50,19 +58,18 @@ def capture_event(project_id, public_key, event_data):
     logger.info(
         "capturing event with id '%s' for project with id '%s'",
         event_data["event_id"],
-        project_id
+        project_id,
     )
 
     if RawEvent.objects.filter(
-            id=serializer.validated_data["event_id"]).exists():
+        id=serializer.validated_data["event_id"]
+    ).exists():
         logger.info(
-            "an event with id '%s' already exists", event_data["event_id"])
+            "an event with id '%s' already exists", event_data["event_id"]
+        )
         raise EventAlreadyProcessed()
 
-    raw_event = serializer.save(
-        project_id=project_id,
-        data=event_data
-    )
+    raw_event = serializer.save(project_id=project_id, data=event_data)
     raw_event.save()
 
     logger.info("captured event with id '%s'", event_data["event_id"])
@@ -110,7 +117,8 @@ def forward_to_sentry(project_id, event_data):
     if not project.sentry_dsn:
         logger.info(
             "not forwarding event because the project with id '%s' doesn't "
-            "have a sentry DSN", project_id
+            "have a sentry DSN",
+            project_id,
         )
         return
 
@@ -122,7 +130,7 @@ def forward_to_sentry(project_id, event_data):
     logger.info(
         "forwarding event with id '%s' for project with id '%s' to sentry",
         event_data["event_id"],
-        project_id
+        project_id,
     )
 
     parsed_dsn = urlparse(project.sentry_dsn)
@@ -150,18 +158,16 @@ def forward_to_sentry(project_id, event_data):
         "Content-Encoding": None,
         "User-Agent": "vedette/0.1.0",
         "X-Sentry-Auth": f"Sentry sentry_key={public_key}, "
-                         f"sentry_version=7, sentry_client=vedette/0.1.0"
-
+        f"sentry_version=7, sentry_client=vedette/0.1.0",
     }
 
     response = requests.post(
-        url,
-        data=compressed_payload,
-        headers=headers,
-        timeout=5
+        url, data=compressed_payload, headers=headers, timeout=5
     )
 
     logger.info(
         "Event for project %s with id %s submission status code is %s",
-        project_id, event_data["event_id"], response.status_code
+        project_id,
+        event_data["event_id"],
+        response.status_code,
     )

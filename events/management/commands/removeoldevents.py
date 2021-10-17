@@ -9,9 +9,9 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             "--days",
-            help='Delete events before those number of days',
+            help="Delete events before those number of days",
             type=int,
-            default=7
+            default=7,
         )
 
     def handle(self, *args, **options):

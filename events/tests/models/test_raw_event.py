@@ -11,5 +11,5 @@ class RawEventTests(TestCase):
             raw_event.pretty_json_data(),
             """{
     "hello": "world"
-}"""
+}""",
         )

@@ -6,38 +6,24 @@ from .constants import SUPPORTED_PLATFORMS, LOG_LEVELS
 
 
 class RawEvent(models.Model):
-    id = models.UUIDField(
-        blank=False,
-        null=False,
-        primary_key=True
-    )
+    id = models.UUIDField(blank=False, null=False, primary_key=True)
 
     project = models.ForeignKey(
-        "projects.Project",
-        blank=False,
-        null=False,
-        on_delete=models.CASCADE
+        "projects.Project", blank=False, null=False, on_delete=models.CASCADE
     )
 
     data = models.JSONField(blank=False, null=False)
 
     created_at = models.DateTimeField(
-        auto_now_add=True,
-        blank=False,
-        null=False
+        auto_now_add=True, blank=False, null=False
     )
 
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        blank=False,
-        null=False
-    )
+    updated_at = models.DateTimeField(auto_now=True, blank=False, null=False)
 
     class Meta:
         indexes = [
             models.Index(
-                fields=["project_id"],
-                name="ix__raw_event__project_id"
+                fields=["project_id"], name="ix__raw_event__project_id"
             )
         ]
 
@@ -46,17 +32,10 @@ class RawEvent(models.Model):
 
 
 class Event(models.Model):
-    id = models.UUIDField(
-        blank=False,
-        null=False,
-        primary_key=True
-    )
+    id = models.UUIDField(blank=False, null=False, primary_key=True)
 
     project = models.ForeignKey(
-        "projects.Project",
-        blank=False,
-        null=False,
-        on_delete=models.CASCADE
+        "projects.Project", blank=False, null=False, on_delete=models.CASCADE
     )
 
     raw_event = models.OneToOneField(
@@ -64,7 +43,7 @@ class Event(models.Model):
         blank=True,
         null=True,
         on_delete=models.CASCADE,
-        related_name="event"
+        related_name="event",
     )
 
     timestamp = models.DateTimeField(null=False, blank=False)
@@ -73,121 +52,53 @@ class Event(models.Model):
         max_length=32,
         choices=tuple(SUPPORTED_PLATFORMS),
         null=False,
-        blank=False
+        blank=False,
     )
 
-    message = models.TextField(
-        null=False,
-        blank=False
-    )
+    message = models.TextField(null=False, blank=False)
 
-    logger = models.TextField(
-        null=True,
-        blank=True
-    )
+    logger = models.TextField(null=True, blank=True)
 
     level = models.CharField(
-        choices=LOG_LEVELS,
-        max_length=8,
-        null=True,
-        blank=True
+        choices=LOG_LEVELS, max_length=8, null=True, blank=True
     )
 
-    transaction = models.CharField(
-        max_length=128,
-        null=True,
-        blank=True
-    )
+    transaction = models.CharField(max_length=128, null=True, blank=True)
 
-    environment = models.CharField(
-        max_length=256,
-        null=True,
-        blank=True
-    )
+    environment = models.CharField(max_length=256, null=True, blank=True)
 
-    server_name = models.CharField(
-        max_length=256,
-        null=True,
-        blank=True
-    )
+    server_name = models.CharField(max_length=256, null=True, blank=True)
 
-    log_message = models.TextField(
-        null=True,
-        blank=True
-    )
+    log_message = models.TextField(null=True, blank=True)
 
-    handled = models.BooleanField(
-        blank=False,
-        null=False,
-        default=False
-    )
+    handled = models.BooleanField(blank=False, null=False, default=False)
 
-    mechanism = models.CharField(
-        max_length=32,
-        null=True,
-        blank=True
-    )
+    mechanism = models.CharField(max_length=32, null=True, blank=True)
 
-    exception_message = models.TextField(
-        null=True,
-        blank=True
-    )
+    exception_message = models.TextField(null=True, blank=True)
 
-    runtime_name = models.CharField(
-        max_length=64,
-        null=True,
-        blank=True
-    )
+    runtime_name = models.CharField(max_length=64, null=True, blank=True)
 
-    runtime_version = models.CharField(
-        max_length=64,
-        null=True,
-        blank=True
-    )
+    runtime_version = models.CharField(max_length=64, null=True, blank=True)
 
-    runtime_build = models.TextField(
-        null=True,
-        blank=True
-    )
+    runtime_build = models.TextField(null=True, blank=True)
 
-    user = models.TextField(
-        null=True,
-        blank=True
-    )
+    user = models.TextField(null=True, blank=True)
 
-    resolved = models.BooleanField(
-        blank=False,
-        null=False,
-        default=False
-    )
+    resolved = models.BooleanField(blank=False, null=False, default=False)
 
     created_at = models.DateTimeField(
-        auto_now_add=True,
-        blank=False,
-        null=False
+        auto_now_add=True, blank=False, null=False
     )
 
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        blank=False,
-        null=False
-    )
+    updated_at = models.DateTimeField(auto_now=True, blank=False, null=False)
 
-    resolved_at = models.DateTimeField(
-        blank=True,
-        null=True
-    )
+    resolved_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         indexes = [
-            models.Index(
-                fields=["project_id"],
-                name="ix__event__project_id"
-            ),
-            models.Index(
-                fields=["timestamp"],
-                name="ix__event__timestamp"
-            )
+            models.Index(fields=["project_id"], name="ix__event__project_id"),
+            models.Index(fields=["timestamp"], name="ix__event__timestamp"),
         ]
 
     # def message(self):
@@ -295,7 +206,8 @@ class Event(models.Model):
     # def log_message(self):
     #     message = self.data.get("logentry", {}).get("message")
     #     if message:
-    #         return message % tuple(self.data.get("logentry", {}).get("params", []))
+    #         return message % tuple(
+    #         self.data.get("logentry", {}).get("params", []))
     #
     #     return None
 

@@ -13,7 +13,7 @@ class GzippedJSONParser(JSONParser):
             return super(GzippedJSONParser, self).parse(
                 stream=BytesIO(data),
                 media_type=media_type,
-                parser_context=parser_context
+                parser_context=parser_context,
             )
         except ParseError:
             decompressed_data = gzip.decompress(data)
@@ -22,7 +22,7 @@ class GzippedJSONParser(JSONParser):
                 return super(GzippedJSONParser, self).parse(
                     stream=BytesIO(decompressed_data),
                     media_type=media_type,
-                    parser_context=parser_context
+                    parser_context=parser_context,
                 )
             except ParseError:
                 decompressed_data = b64decode(zlib.decompress(data))
@@ -30,7 +30,7 @@ class GzippedJSONParser(JSONParser):
                 return super(GzippedJSONParser, self).parse(
                     stream=BytesIO(decompressed_data),
                     media_type=media_type,
-                    parser_context=parser_context
+                    parser_context=parser_context,
                 )
 
     def parse(self, stream, media_type=None, parser_context=None):
@@ -39,4 +39,4 @@ class GzippedJSONParser(JSONParser):
         try:
             return self._parse(data, media_type, parser_context)
         except Exception as e:
-            raise ParseError('gzipped json parse error - %s' % str(e)) from e
+            raise ParseError("gzipped json parse error - %s" % str(e)) from e

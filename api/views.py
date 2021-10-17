@@ -44,19 +44,15 @@ class StoreEvent(APIView):
         return public_key
 
     def _create_event_processing_task(
-            self,
-            project_id,
-            public_key,
-            event_data
+        self, project_id, public_key, event_data
     ):
         event_processing_clain = chain(
             capture_event.s(project_id, public_key, event_data),
-            process_event.s()
+            process_event.s(),
         )
 
         return group(
-            event_processing_clain,
-            forward_to_sentry.s(project_id, event_data)
+            event_processing_clain, forward_to_sentry.s(project_id, event_data)
         )
 
     def post(self, request, project_id, format=None):
@@ -66,19 +62,16 @@ class StoreEvent(APIView):
 
         if serializer.is_valid():
             event_processing_task = self._create_event_processing_task(
-                project_id, public_key, request.data)
+                project_id, public_key, request.data
+            )
             event_processing_task.delay()
 
             return Response(
-                {
-                    "message": "the event has been received"
-                },
-                status=status.HTTP_200_OK
+                {"message": "the event has been received"},
+                status=status.HTTP_200_OK,
             )
         else:
             return Response(
-                {
-                    "message": "invalid event payload"
-                },
-                status=status.HTTP_400_BAD_REQUEST
+                {"message": "invalid event payload"},
+                status=status.HTTP_400_BAD_REQUEST,
             )

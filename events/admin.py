@@ -4,18 +4,9 @@ from .models import Event, RawEvent
 
 
 class RawEventAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "view_project_name",
-        "created_at"
-    )
+    list_display = ("id", "view_project_name", "created_at")
 
-    fields = (
-        "id",
-        "view_project_name",
-        "created_at",
-        "updated_at"
-    )
+    fields = ("id", "view_project_name", "created_at", "updated_at")
 
     def has_add_permission(self, request):
         return False
@@ -23,18 +14,13 @@ class RawEventAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
-    @admin.display(ordering='project__name', description="Project")
+    @admin.display(ordering="project__name", description="Project")
     def view_project_name(self, obj):
         return obj.project.name
 
 
 class EventAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "view_project_name",
-        "timestamp",
-        "resolved"
-    )
+    list_display = ("id", "view_project_name", "timestamp", "resolved")
 
     fields = (
         "id",
@@ -44,7 +30,7 @@ class EventAdmin(admin.ModelAdmin):
         "timestamp",
         "resolved",
         "created_at",
-        "updated_at"
+        "updated_at",
     )
 
     def has_add_permission(self, request):
@@ -53,7 +39,7 @@ class EventAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
-    @admin.display(ordering='project__name', description="Project")
+    @admin.display(ordering="project__name", description="Project")
     def view_project_name(self, obj):
         return obj.project.name
 

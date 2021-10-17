@@ -22,61 +22,47 @@ class StoreEventTests(TestCase):
             {
                 "event_id": "5d167e7d21004858ae9dfba46d370377",
                 "timestamp": "2021-08-22T18:26:04.994971Z",
-                "platform": "python"
+                "platform": "python",
             },
-            format="json"
+            format="json",
         )
 
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response.json(),
-            {
-                'detail': 'missing authentication'
-            }
-        )
+        self.assertEqual(response.json(), {"detail": "missing authentication"})
 
         group_apply_async_mock.assert_not_called()
 
     @patch("api.views.group.apply_async")
     def test_store_event_requires_valid_authentication(
-            self,
-            group_apply_async_mock
+        self, group_apply_async_mock
     ):
         client = APIClient()
-        client.credentials(
-            HTTP_X_SENTRY_AUTH="invalid-authentication"
-        )
+        client.credentials(HTTP_X_SENTRY_AUTH="invalid-authentication")
 
         response = client.post(
             f"/api/{self.project_id}/store/",
             {
                 "event_id": "5d167e7d21004858ae9dfba46d370377",
                 "timestamp": "2021-08-22T18:26:04.994971Z",
-                "platform": "python"
+                "platform": "python",
             },
-            format="json"
+            format="json",
         )
 
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response.json(),
-            {
-                'detail': 'missing authentication'
-            }
-        )
+        self.assertEqual(response.json(), {"detail": "missing authentication"})
 
         group_apply_async_mock.assert_not_called()
 
     @patch("api.views.group.apply_async")
     def test_store_event_requires_valid_sentry_key(
-            self,
-            group_apply_async_mock
+        self, group_apply_async_mock
     ):
         client = APIClient()
         client.credentials(
             HTTP_X_SENTRY_AUTH="Sentry "
-                               "sentry_version=7, "
-                               "sentry_client=sentry.python/1.1.0"
+            "sentry_version=7, "
+            "sentry_client=sentry.python/1.1.0"
         )
 
         response = client.post(
@@ -84,18 +70,13 @@ class StoreEventTests(TestCase):
             {
                 "event_id": "5d167e7d21004858ae9dfba46d370377",
                 "timestamp": "2021-08-22T18:26:04.994971Z",
-                "platform": "python"
+                "platform": "python",
             },
-            format="json"
+            format="json",
         )
 
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response.json(),
-            {
-                'detail': 'missing public key'
-            }
-        )
+        self.assertEqual(response.json(), {"detail": "missing public key"})
 
         group_apply_async_mock.assert_not_called()
 
@@ -104,8 +85,8 @@ class StoreEventTests(TestCase):
         client = APIClient()
         client.credentials(
             HTTP_X_SENTRY_AUTH="Sentry sentry_key=PublicKey, "
-                               "sentry_version=7, "
-                               "sentry_client=sentry.python/1.1.0"
+            "sentry_version=7, "
+            "sentry_client=sentry.python/1.1.0"
         )
 
         response = client.post(
@@ -113,37 +94,33 @@ class StoreEventTests(TestCase):
             {
                 "event_id": "5d167e7d21004858ae9dfba46d370377",
                 "timestamp": "2021-08-22T18:26:04.994971Z",
-                "platform": "python"
+                "platform": "python",
             },
-            format="json"
+            format="json",
         )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.json(),
-            {
-                "message": "the event has been received"
-            }
+            response.json(), {"message": "the event has been received"}
         )
 
         group_apply_async_mock.assert_called_once()
 
     @patch("api.views.group.apply_async")
     def test_store_event_rejects_event_with_missing_attribute(
-            self,
-            group_apply_async_mock
+        self, group_apply_async_mock
     ):
         event = {
             "event_id": "5d167e7d21004858ae9dfba46d370377",
             "timestamp": "2021-08-22T18:26:04.994971Z",
-            "platform": "python"
+            "platform": "python",
         }
 
         client = APIClient()
         client.credentials(
             HTTP_X_SENTRY_AUTH="Sentry sentry_key=PublicKey, "
-                               "sentry_version=7, "
-                               "sentry_client=sentry.python/1.1.0"
+            "sentry_version=7, "
+            "sentry_client=sentry.python/1.1.0"
         )
 
         for missing_attribute in event.keys():
@@ -151,23 +128,18 @@ class StoreEventTests(TestCase):
             del new_event[missing_attribute]
 
             response = client.post(
-                f"/api/{self.project_id}/store/",
-                new_event,
-                format="json"
+                f"/api/{self.project_id}/store/", new_event, format="json"
             )
 
             self.assertEqual(
                 response.status_code,
                 400,
                 f"the attribute {missing_attribute} is not missing in "
-                f"the request body"
+                f"the request body",
             )
 
             self.assertEqual(
-                response.json(),
-                {
-                    "message": "invalid event payload"
-                }
+                response.json(), {"message": "invalid event payload"}
             )
 
         group_apply_async_mock.assert_not_called()
