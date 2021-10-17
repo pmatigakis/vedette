@@ -22,7 +22,7 @@ logger = get_task_logger(__name__)
 
 @shared_task
 def capture_event(project_id, public_key, event_data):
-    logger.info("capturing event with id '%s'", event_data["event_id"])
+    logger.info("capturing event for project with id '%s'", project_id)
 
     try:
         project = Project.objects.get(pk=project_id)
@@ -30,7 +30,14 @@ def capture_event(project_id, public_key, event_data):
         logger.warning("a project with id '%s' doesn't exist", project_id)
         raise e
 
-    if project.public_key != UUID(public_key):
+    try:
+        public_key_uuid = UUID(public_key)
+    except ValueError as e:
+        logger.warning("the public key given is not a a valid uuid for "
+                       "project with id '%s'", project_id)
+        raise InvalidProjectPublicKey() from e
+
+    if project.public_key != public_key_uuid:
         logger.warning("the public key doesn't match the public key of "
                        "project with id '%s'", project_id)
         raise InvalidProjectPublicKey()
@@ -39,6 +46,12 @@ def capture_event(project_id, public_key, event_data):
     if not serializer.is_valid():
         logger.error("received invalid event data")
         raise InvalidEventData()
+
+    logger.info(
+        "capturing event with id '%s' for project with id '%s'",
+        event_data["event_id"],
+        project_id
+    )
 
     if RawEvent.objects.filter(
             id=serializer.validated_data["event_id"]).exists():
@@ -85,7 +98,7 @@ def process_event(event_id):
 @shared_task(ignore_result=True)
 def forward_to_sentry(project_id, event_data):
     logger.info(
-        "forwarding event with id '%s' to sentry", event_data["event_id"]
+        "forwarding event for project with id '%s' to sentry", project_id
     )
 
     try:
@@ -105,6 +118,12 @@ def forward_to_sentry(project_id, event_data):
     if not serializer.is_valid():
         logger.error("received invalid event data")
         raise InvalidEventData()
+
+    logger.info(
+        "forwarding event with id '%s' for project with id '%s' to sentry",
+        event_data["event_id"],
+        project_id
+    )
 
     parsed_dsn = urlparse(project.sentry_dsn)
     if not all([parsed_dsn.scheme, parsed_dsn.netloc, parsed_dsn.path]):

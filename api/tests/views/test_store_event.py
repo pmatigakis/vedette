@@ -8,6 +8,8 @@ from projects.models import Project
 
 class StoreEventTests(TestCase):
     def setUp(self):
+        super(StoreEventTests, self).setUp()
+
         project = Project(name="test project")
         project.save()
         self.project_id = project.id
