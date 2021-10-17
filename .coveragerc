@@ -1,0 +1,9 @@
+[run]
+source = .
+branch = True
+omit =
+    manage.py
+    web/migrations/*
+    events/migrations/*
+    projects/migrations/*
+    api/migrations/*
