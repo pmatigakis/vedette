@@ -1,23 +1,23 @@
-from uuid import UUID
+import base64
 import json
 import zlib
-import base64
 from urllib.parse import urlparse
+from uuid import UUID
 
+import requests
 from celery import shared_task
 from celery.utils.log import get_task_logger
-import requests
 
 from events.models import RawEvent
 from projects.models import Project
-from .serializers import RawEventSerializer, EventSerializer
+
 from .exceptions import (
-    InvalidProjectPublicKey,
-    InvalidEventData,
     EventAlreadyProcessed,
+    InvalidEventData,
+    InvalidProjectPublicKey,
     InvalidSentryDsn,
 )
-
+from .serializers import EventSerializer, RawEventSerializer
 
 logger = get_task_logger(__name__)
 

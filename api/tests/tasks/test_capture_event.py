@@ -1,10 +1,10 @@
 from uuid import UUID
+
 from django.test import TestCase
 
-from projects.models import Project
-from events.models import RawEvent, Event
-
 from api.tasks import capture_event
+from events.models import Event, RawEvent
+from projects.models import Project
 
 
 class CaptureEventTests(TestCase):

@@ -2,7 +2,7 @@ import json
 
 from django.db import models
 
-from .constants import SUPPORTED_PLATFORMS, LOG_LEVELS
+from .constants import LOG_LEVELS, SUPPORTED_PLATFORMS
 
 
 class RawEvent(models.Model):

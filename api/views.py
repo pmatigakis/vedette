@@ -1,16 +1,15 @@
 from celery import chain, group
-
-from rest_framework.exceptions import NotAuthenticated
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import NotAuthenticated
 from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from events.negotiation import IgnoreClientContentNegotiation
 from events.parsers import GzippedJSONParser
 
 from .serializers import RawEventSerializer
-from .tasks import capture_event, process_event, forward_to_sentry
+from .tasks import capture_event, forward_to_sentry, process_event
 
 
 class StoreEvent(APIView):

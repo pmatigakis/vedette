@@ -1,15 +1,14 @@
-from django.urls import path
 from django.contrib.auth import views as auth_views
+from django.urls import path
 from django.views.generic.base import RedirectView
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from .views import (
-    EventListView,
-    EventDetailsView,
     EventDataView,
+    EventDetailsView,
+    EventListView,
     event_details_json,
 )
-
 
 urlpatterns = [
     path(
