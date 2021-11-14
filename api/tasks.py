@@ -2,6 +2,7 @@ from uuid import UUID
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from django.db import transaction
 
 from events.models import RawEvent
 from projects.models import Project
@@ -16,7 +17,7 @@ from .serializers import EventSerializer, RawEventSerializer
 logger = get_task_logger(__name__)
 
 
-@shared_task
+@shared_task(ignore_result=True)
 def capture_event(project_id, public_key, event_data):
     logger.info("capturing event for project with id '%s'", project_id)
 
@@ -44,8 +45,8 @@ def capture_event(project_id, public_key, event_data):
         )
         raise InvalidProjectPublicKey()
 
-    serializer = RawEventSerializer(data=event_data)
-    if not serializer.is_valid():
+    raw_event_serializer = RawEventSerializer(data=event_data)
+    if not raw_event_serializer.is_valid():
         logger.error("received invalid event data")
         raise InvalidEventData()
 
@@ -56,41 +57,32 @@ def capture_event(project_id, public_key, event_data):
     )
 
     if RawEvent.objects.filter(
-        id=serializer.validated_data["event_id"]
+        id=raw_event_serializer.validated_data["event_id"]
     ).exists():
         logger.info(
             "an event with id '%s' already exists", event_data["event_id"]
         )
         raise EventAlreadyProcessed()
 
-    raw_event = serializer.save(project_id=project_id, data=event_data)
-    raw_event.save()
+    raw_event = raw_event_serializer.save(
+        project_id=project_id,
+        data=event_data
+    )
+
+    event_serializer = EventSerializer(data=raw_event.data)
+    if not event_serializer.is_valid():
+        logger.error("received invalid event data")
+        raise InvalidEventData()
+
+    event = event_serializer.save(
+        raw_event=raw_event,
+        project=raw_event.project
+    )
+
+    with transaction.atomic():
+        raw_event.save()
+        event.save()
 
     logger.info("captured event with id '%s'", event_data["event_id"])
 
     return str(raw_event.id)
-
-
-@shared_task(ignore_result=True)
-def process_event(event_id):
-    logger.info("processing event with id '%s'", event_id)
-
-    try:
-        raw_event = RawEvent.objects.get(pk=UUID(event_id))
-    except RawEvent.DoesNotExist as e:
-        logger.warning("a raw event with id '%s' doesn't exist", event_id)
-        raise e
-
-    if hasattr(raw_event, "event"):
-        logger.warning("an event with id '%s' already exists", event_id)
-        raise EventAlreadyProcessed()
-
-    serializer = EventSerializer(data=raw_event.data)
-    if not serializer.is_valid():
-        logger.error("received invalid event data")
-        raise InvalidEventData()
-
-    event = serializer.save(raw_event=raw_event, project=raw_event.project)
-    event.save()
-
-    logger.info("processed event with id '%s'", event_id)
