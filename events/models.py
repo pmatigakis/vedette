@@ -38,6 +38,14 @@ class Event(models.Model):
         "projects.Project", blank=False, null=False, on_delete=models.CASCADE
     )
 
+    issue = models.ForeignKey(
+        "Issue",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="events"
+    )
+
     raw_event = models.OneToOneField(
         "RawEvent",
         blank=True,
@@ -213,3 +221,33 @@ class Event(models.Model):
 
     def log_params(self):
         return self.raw_event.data.get("logentry", {}).get("params", [])
+
+
+class Issue(models.Model):
+    project = models.ForeignKey(
+        "projects.Project", blank=False, null=False, on_delete=models.CASCADE
+    )
+    signature = models.CharField(max_length=64, blank=False, null=False)
+    primary_event = models.ForeignKey(
+        "Event",
+        blank=False,
+        null=False,
+        on_delete=models.CASCADE,
+        related_name="primary_issues"
+    )
+    resolved = models.BooleanField(blank=False, null=False, default=False)
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        blank=False,
+        null=False
+    )
+    updated_at = models.DateTimeField(auto_now=True, blank=False, null=False)
+    resolved_at = models.DateTimeField(blank=True, null=True)
+    first_seen_at = models.DateTimeField(blank=False, null=False)
+    last_seen_at = models.DateTimeField(blank=False, null=False)
+
+    class Meta:
+        unique_together = ["project_id", "signature"]
+        indexes = [
+            models.Index(fields=["project_id"], name="ix__issue__project_id")
+        ]
