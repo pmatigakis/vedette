@@ -47,7 +47,12 @@ class EventAdmin(admin.ModelAdmin):
 
 class IssueAdmin(admin.ModelAdmin):
     list_display = (
-        "id", "view_project_name", "first_seen_at", "last_seen_at", "resolved"
+        "id",
+        "view_project_name",
+        "view_message",
+        "first_seen_at",
+        "last_seen_at",
+        "resolved"
     )
 
     fields = (
