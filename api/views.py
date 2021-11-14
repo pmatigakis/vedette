@@ -1,4 +1,4 @@
-from celery import chain, group
+from celery import chain
 from rest_framework import status
 from rest_framework.exceptions import NotAuthenticated
 from rest_framework.renderers import JSONRenderer
@@ -9,7 +9,7 @@ from events.negotiation import IgnoreClientContentNegotiation
 from events.parsers import GzippedJSONParser
 
 from .serializers import RawEventSerializer
-from .tasks import capture_event, forward_to_sentry, process_event
+from .tasks import capture_event, process_event
 
 
 class StoreEvent(APIView):
@@ -45,13 +45,9 @@ class StoreEvent(APIView):
     def _create_event_processing_task(
         self, project_id, public_key, event_data
     ):
-        event_processing_clain = chain(
+        return chain(
             capture_event.s(project_id, public_key, event_data),
             process_event.s(),
-        )
-
-        return group(
-            event_processing_clain, forward_to_sentry.s(project_id, event_data)
         )
 
     def post(self, request, project_id, format=None):

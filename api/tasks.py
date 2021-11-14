@@ -1,10 +1,5 @@
-import base64
-import json
-import zlib
-from urllib.parse import urlparse
 from uuid import UUID
 
-import requests
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
@@ -14,8 +9,7 @@ from projects.models import Project
 from .exceptions import (
     EventAlreadyProcessed,
     InvalidEventData,
-    InvalidProjectPublicKey,
-    InvalidSentryDsn,
+    InvalidProjectPublicKey
 )
 from .serializers import EventSerializer, RawEventSerializer
 
@@ -100,74 +94,3 @@ def process_event(event_id):
     event.save()
 
     logger.info("processed event with id '%s'", event_id)
-
-
-@shared_task(ignore_result=True)
-def forward_to_sentry(project_id, event_data):
-    logger.info(
-        "forwarding event for project with id '%s' to sentry", project_id
-    )
-
-    try:
-        project = Project.objects.get(pk=project_id)
-    except Project.DoesNotExist as e:
-        logger.warning("a project with id '%s' doesn't exist", project_id)
-        raise e
-
-    if not project.sentry_dsn:
-        logger.info(
-            "not forwarding event because the project with id '%s' doesn't "
-            "have a sentry DSN",
-            project_id,
-        )
-        return
-
-    serializer = RawEventSerializer(data=event_data)
-    if not serializer.is_valid():
-        logger.error("received invalid event data")
-        raise InvalidEventData()
-
-    logger.info(
-        "forwarding event with id '%s' for project with id '%s' to sentry",
-        event_data["event_id"],
-        project_id,
-    )
-
-    parsed_dsn = urlparse(project.sentry_dsn)
-    if not all([parsed_dsn.scheme, parsed_dsn.netloc, parsed_dsn.path]):
-        logger.error("invalid sentry dsn %s", project.sentry_dsn)
-        raise InvalidSentryDsn()
-
-    try:
-        public_key, host = parsed_dsn.netloc.split("@")
-    except ValueError:
-        logger.error("invalid sentry dsn %s", project.sentry_dsn)
-        raise InvalidSentryDsn()
-
-    project_id = parsed_dsn.path[1:]
-    if not project_id:
-        logger.error("invalid project id in sentry dsn %s", project.sentry_dsn)
-        raise InvalidSentryDsn()
-
-    url = f"{parsed_dsn.scheme}://{public_key}@{host}/api/{project_id}/store/"
-    compressed_payload = base64.b64encode(
-        zlib.compress(json.dumps(event_data).encode())
-    )
-    headers = {
-        "Content-Type": "application/json",
-        "Content-Encoding": None,
-        "User-Agent": "vedette/0.1.0",
-        "X-Sentry-Auth": f"Sentry sentry_key={public_key}, "
-        f"sentry_version=7, sentry_client=vedette/0.1.0",
-    }
-
-    response = requests.post(
-        url, data=compressed_payload, headers=headers, timeout=5
-    )
-
-    logger.info(
-        "Event for project %s with id %s submission status code is %s",
-        project_id,
-        event_data["event_id"],
-        response.status_code,
-    )
