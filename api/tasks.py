@@ -1,10 +1,11 @@
 from uuid import UUID
+from hashlib import sha256
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.db import transaction
 
-from events.models import RawEvent
+from events.models import RawEvent, Issue
 from projects.models import Project
 
 from .exceptions import (
@@ -79,7 +80,26 @@ def capture_event(project_id, public_key, event_data):
         project=raw_event.project
     )
 
+    signature = sha256(event.message.encode()).hexdigest()
+    issue = Issue.objects.filter(project=project, signature=signature).first()
+    if not issue:
+        issue = Issue(
+            project=project,
+            signature=signature,
+            primary_event=event,
+            first_seen_at=event.timestamp,
+            last_seen_at=event.timestamp
+        )
+
+    if event.timestamp < issue.first_seen_at:
+        issue.first_seen_at = event.timestamp
+
+    if event.timestamp > issue.last_seen_at:
+        issue.last_seen_at = event.timestamp
+
+    event.issue = issue
     with transaction.atomic():
+        issue.save()
         raw_event.save()
         event.save()
 
