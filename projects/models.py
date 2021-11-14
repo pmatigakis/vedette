@@ -17,8 +17,6 @@ class Project(models.Model):
         default=uuid4, blank=False, null=False, unique=True
     )
 
-    sentry_dsn = models.URLField(max_length=256, null=True, blank=True)
-
     created_at = models.DateTimeField(
         auto_now_add=True, blank=False, null=False
     )
