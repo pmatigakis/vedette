@@ -14,8 +14,11 @@ class StoreEventTests(TestCase):
         project.save()
         self.project_id = project.id
 
-    @patch("api.views.group.apply_async")
-    def test_store_event_requires_authentication(self, group_apply_async_mock):
+    @patch("api.views.capture_event.apply_async")
+    def test_store_event_requires_authentication(
+            self,
+            capture_event_apply_async_mock
+    ):
         client = APIClient()
         response = client.post(
             f"/api/{self.project_id}/store/",
@@ -30,11 +33,12 @@ class StoreEventTests(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json(), {"detail": "missing authentication"})
 
-        group_apply_async_mock.assert_not_called()
+        capture_event_apply_async_mock.assert_not_called()
 
-    @patch("api.views.group.apply_async")
+    @patch("api.views.capture_event.apply_async")
     def test_store_event_requires_valid_authentication(
-        self, group_apply_async_mock
+        self,
+        capture_event_apply_async_mock
     ):
         client = APIClient()
         client.credentials(HTTP_X_SENTRY_AUTH="invalid-authentication")
@@ -52,11 +56,12 @@ class StoreEventTests(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json(), {"detail": "missing authentication"})
 
-        group_apply_async_mock.assert_not_called()
+        capture_event_apply_async_mock.assert_not_called()
 
-    @patch("api.views.group.apply_async")
+    @patch("api.views.capture_event.apply_async")
     def test_store_event_requires_valid_sentry_key(
-        self, group_apply_async_mock
+        self,
+        capture_event_apply_async_mock
     ):
         client = APIClient()
         client.credentials(
@@ -78,10 +83,10 @@ class StoreEventTests(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json(), {"detail": "missing public key"})
 
-        group_apply_async_mock.assert_not_called()
+        capture_event_apply_async_mock.assert_not_called()
 
-    @patch("api.views.group.apply_async")
-    def test_store_event(self, group_apply_async_mock):
+    @patch("api.views.capture_event.apply_async")
+    def test_store_event(self, capture_event_apply_async_mock):
         client = APIClient()
         client.credentials(
             HTTP_X_SENTRY_AUTH="Sentry sentry_key=PublicKey, "
@@ -104,11 +109,12 @@ class StoreEventTests(TestCase):
             response.json(), {"message": "the event has been received"}
         )
 
-        group_apply_async_mock.assert_called_once()
+        capture_event_apply_async_mock.assert_called_once()
 
-    @patch("api.views.group.apply_async")
+    @patch("api.views.capture_event.apply_async")
     def test_store_event_rejects_event_with_missing_attribute(
-        self, group_apply_async_mock
+        self,
+        capture_event_apply_async_mock
     ):
         event = {
             "event_id": "5d167e7d21004858ae9dfba46d370377",
@@ -142,4 +148,4 @@ class StoreEventTests(TestCase):
                 response.json(), {"message": "invalid event payload"}
             )
 
-        group_apply_async_mock.assert_not_called()
+        capture_event_apply_async_mock.assert_not_called()
