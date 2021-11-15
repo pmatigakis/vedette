@@ -8,7 +8,8 @@ from .views import (
     EventDetailsView,
     EventListView,
     event_details_json,
-    IssueListView
+    IssueListView,
+    IssueEventsListView
 )
 
 urlpatterns = [
@@ -18,6 +19,7 @@ urlpatterns = [
     ),
     path("", EventListView.as_view(), name="event-list"),
     path("issues/", IssueListView.as_view(), name="issue-list"),
+    path("issues/<pk>/", IssueEventsListView.as_view(), name="issue-details"),
     path("<event_id>.json", event_details_json, name="event-details-json"),
     path("<pk>/", EventDetailsView.as_view(), name="event-details"),
     path("<pk>/data", EventDataView.as_view(), name="event-data"),

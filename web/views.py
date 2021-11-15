@@ -37,3 +37,24 @@ class IssueListView(LoginRequiredMixin, ListView):
     paginate_by = 10
     template_name = "web/issues/list.html"
     ordering = ["-last_seen_at"]
+
+
+class IssueEventsListView(LoginRequiredMixin, ListView):
+    model = Event
+    paginate_by = 10
+    template_name = "web/issues/details.html"
+    ordering = ["-timestamp"]
+
+    def get_queryset(self):
+        queryset = super(IssueEventsListView, self).get_queryset()
+
+        return queryset.filter(issue_id=self.kwargs["pk"])
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        issue = Issue.objects.get(pk=self.kwargs["pk"])
+
+        return super(IssueEventsListView, self).get_context_data(
+            object_list=object_list,
+            issue=issue,
+            **kwargs
+        )
