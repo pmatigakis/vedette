@@ -8,6 +8,7 @@ from .views import (
     EventDetailsView,
     EventListView,
     event_details_json,
+    IssueListView
 )
 
 urlpatterns = [
@@ -16,6 +17,7 @@ urlpatterns = [
         RedirectView.as_view(url="/static/favicon.ico", permanent=True),
     ),
     path("", EventListView.as_view(), name="event-list"),
+    path("issues/", IssueListView.as_view(), name="issue-list"),
     path("<event_id>.json", event_details_json, name="event-details-json"),
     path("<pk>/", EventDetailsView.as_view(), name="event-details"),
     path("<pk>/data", EventDataView.as_view(), name="event-data"),

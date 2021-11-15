@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Vedette - Events</title>
+    <title>Vedette - Issues</title>
 
     <!-- Custom fonts for this template-->
     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
@@ -95,14 +95,14 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-4 text-gray-800">Events</h1>
+                    <h1 class="h3 mb-4 text-gray-800">Issues</h1>
 
                     <!-- Event List -->
                       <table class="table table-striped">
                           <thead>
                               <tr>
                                   <th style="width: 20%">
-                                      Event
+                                      Issue
                                   </th>
                                   <th style="width: 8%" class="text-center">
                                       Level
@@ -115,45 +115,41 @@
                               </tr>
                           </thead>
                           <tbody>
-                          {% for event in object_list %}
+                          {% for issue in object_list %}
                               <tr>
                                   <td>
-                                      <span>{{ event.message }}</span>
-                                      {% if event.exception_message %}
+                                      <span>{{ issue.primary_event.message }}</span>
+                                      {% if issue.primary_event.exception_message %}
                                           <br/>
-                                          <span>{{ event.exception_message }}</span>
+                                          <span>{{ issue.primary_event.exception_message }}</span>
                                       {% endif %}
                                       <br/>
-                                      <small>Occurred at {{ event.timestamp|date:"r" }} in {{ event.project.name }}</small>
+                                      <small>Last seen at {{ issue.last_seen_at|date:"r" }} in {{ issue.project.name }}</small>
                                   </td>
                                   <td class="text-center">
-                                      {% if event.level %}
-                                          {% if event.level == "error" or event.level == "fatal" %}
-                                              <span class="badge badge-danger">{{ event.level }}</span>
-                                          {% elif event.level == "warning" %}
-                                              <span class="badge badge-warning">{{ event.level }}</span>
+                                      {% if issue.primary_event.level %}
+                                          {% if issue.primary_event.level == "error" or issue.primary_event.level == "fatal" %}
+                                              <span class="badge badge-danger">{{ issue.primary_event.level }}</span>
+                                          {% elif issue.primary_event.level == "warning" %}
+                                              <span class="badge badge-warning">{{ issue.primary_event.level }}</span>
                                           {% else %}
-                                              <span class="badge badge-primary">{{ event.level }}</span>
+                                              <span class="badge badge-primary">{{ issue.primary_event.level }}</span>
                                           {% endif %}
                                       {% else %}
                                           <span class="badge badge-secondary">Undefined</span>
                                       {% endif %}
                                   </td>
                                   <td class="text-center">
-                                      {% if event.resolved %}
+                                      {% if issue.resolved %}
                                           <span class="badge badge-success">Resolved</span>
                                       {% else %}
                                           <span class="badge badge-warning">Unresolved</span>
                                       {% endif %}
                                   </td>
                                   <td class="text-right">
-                                      <a class="btn btn-primary btn-sm" href="{% url 'event-details' event.id %}">
+                                      <a class="btn btn-primary btn-sm" href="{% url 'event-details' issue.primary_event.id %}">
                                           <i class="fas fa-folder"></i>
                                           View
-                                      </a>
-                                      <a class="btn btn-info btn-sm" href="{% url 'event-details-json' event.id %}">
-                                          <i class="fas fa-pencil-alt"></i>
-                                          Json
                                       </a>
                                   </td>
                               </tr>

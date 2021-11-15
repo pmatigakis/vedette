@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
-from events.models import Event, RawEvent
+from events.models import Event, RawEvent, Issue
 
 
 class EventListView(LoginRequiredMixin, ListView):
@@ -30,3 +30,10 @@ def event_details_json(request, event_id):
     raw_event = get_object_or_404(RawEvent, pk=event_id)
 
     return JsonResponse(raw_event.data)
+
+
+class IssueListView(LoginRequiredMixin, ListView):
+    model = Issue
+    paginate_by = 10
+    template_name = "web/issues/list.html"
+    ordering = ["-last_seen_at"]
