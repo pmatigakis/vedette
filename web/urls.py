@@ -17,12 +17,21 @@ urlpatterns = [
         "favicon.ico",
         RedirectView.as_view(url="/static/favicon.ico", permanent=True),
     ),
-    path("", EventListView.as_view(), name="event-list"),
+    path(
+        "",
+        RedirectView.as_view(url="/issues", permanent=True),
+        name="index"
+    ),
     path("issues/", IssueListView.as_view(), name="issue-list"),
     path("issues/<pk>/", IssueEventsListView.as_view(), name="issue-details"),
-    path("<event_id>.json", event_details_json, name="event-details-json"),
-    path("<pk>/", EventDetailsView.as_view(), name="event-details"),
-    path("<pk>/data", EventDataView.as_view(), name="event-data"),
+    path("events/", EventListView.as_view(), name="event-list"),
+    path(
+        "events/<event_id>.json",
+        event_details_json,
+        name="event-details-json"
+    ),
+    path("events/<pk>/", EventDetailsView.as_view(), name="event-details"),
+    path("events/<pk>/data", EventDataView.as_view(), name="event-data"),
     path("accounts/login/", auth_views.LoginView.as_view(), name="login"),
     path("accounts/logout/", auth_views.LogoutView.as_view(), name="logout"),
 ]
