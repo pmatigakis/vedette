@@ -250,6 +250,37 @@ class Event(models.Model):
                 "breadcrumbs", {}).get("values", [])
         ]
 
+    def _create_code_snippet(self, stacktrace):
+        code = []
+        code.extend(stacktrace.get("pre_context", []))
+        if "context_line" in stacktrace:
+            code.append(stacktrace["context_line"])
+        code.extend(stacktrace.get("post_context", []))
+
+        if "lineno" in stacktrace:
+            offset = stacktrace["lineno"] - len(stacktrace.get("pre_context", []))
+            code = [
+                f"{index + offset}) {line}"
+                for index, line in enumerate(code)
+            ]
+
+        return "\n".join(code)
+
+    def stacktraces(self):
+        values = self.raw_event.data.get("exception", {}).get("values", [])
+        if not values:
+            return []
+
+        return [
+            {
+                "vars": _stacktrace.get("vars", {}),
+                "lineno": _stacktrace.get("lineno"),
+                "module": _stacktrace.get("module"),
+                "code": self._create_code_snippet(_stacktrace)
+            }
+            for _stacktrace in values[0].get("stacktrace", {}).get("frames", [])
+        ]
+
 
 class Issue(models.Model):
     project = models.ForeignKey(

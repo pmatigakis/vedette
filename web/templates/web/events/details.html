@@ -258,6 +258,22 @@
                   </table>
                 </div>
               </div>
+              {% if event.stacktraces %}
+                {% for stacktrace in event.stacktraces %}
+                  <div class="row">
+                    <div>module {{ stacktrace.module }} at line {{ stacktrace.lineno }}</div>
+                    <div class="col-12"><pre>{{ stacktrace.code }}</pre></div>
+                    <table class="table table-bordered table-striped">
+                        {% for k, v in stacktrace.vars.items %}
+                          <tr>
+                            <th scope="row">{{ k }}</th>
+                            <td>{{ v }}</td>
+                          </tr>
+                        {% endfor %}
+                    </table>
+                  </div>
+                {% endfor %}
+              {% endif %}
           </div>
       </div>
       {% endif %}
