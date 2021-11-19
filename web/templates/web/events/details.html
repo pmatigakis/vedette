@@ -211,7 +211,7 @@
       </div>
       <!-- /.card -->
 
-                          {% if event.log_message %}
+      {% if event.log_message %}
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">Message</h3>
@@ -262,6 +262,49 @@
       </div>
       {% endif %}
 
+      {% if event.breadcrumbs %}
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Breadcrumbs</h3>
+        </div>
+        <div class="card-body">
+          {% for breadcrumb in event.breadcrumbs %}
+          <table class="table table-bordered table-striped">
+            <tr>
+              <th scope="row">Time</th>
+              <td>{{ breadcrumb.time }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Type</th>
+              <td>{{ breadcrumb.type }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Category</th>
+              <td>{{ breadcrumb.category }}</td>
+            </tr>
+            {% if breadcrumb.level %}
+            <tr>
+              <th scope="row">Level</th>
+              <td>{{ breadcrumb.level }}</td>
+            </tr>
+            {% endif %}
+            {% if breadcrumb.message %}
+            <tr>
+              <th scope="row">Message</th>
+              <td>{{ breadcrumb.message }}</td>
+            </tr>
+            {% endif %}
+            {% if breadcrumb.data %}
+            <tr>
+              <th scope="row">Data</th>
+              <td><pre><code class="language-json">{{ breadcrumb.data }}</code></pre></td>
+            </tr>
+            {% endif %}
+          </table>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
                 </div>
                 <!-- /.container-fluid -->
 

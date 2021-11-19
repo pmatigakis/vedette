@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from django.db import models
 
@@ -221,6 +222,33 @@ class Event(models.Model):
 
     def log_params(self):
         return self.raw_event.data.get("logentry", {}).get("params", [])
+
+    def _timestamp_string_to_datetime(self, timestamp):
+        if not timestamp:
+            return None
+
+        return datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+    def _pretty_json_data(self, data):
+        if not data:
+            return None
+
+        return json.dumps(data, indent=4)
+
+    def breadcrumbs(self):
+        return [
+            {
+                "type": breadcrumb.get("type"),
+                "category": breadcrumb.get("category"),
+                "message": breadcrumb.get("message"),
+                "level": breadcrumb.get("level"),
+                "time": self._timestamp_string_to_datetime(
+                    breadcrumb.get("timestamp")),
+                "data": self._pretty_json_data(breadcrumb.get("data"))
+            }
+            for breadcrumb in self.raw_event.data.get(
+                "breadcrumbs", {}).get("values", [])
+        ]
 
 
 class Issue(models.Model):
