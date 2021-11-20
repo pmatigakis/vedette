@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="col-2 bg-light">
+            <a href="/"
+               class="align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+                <svg class="bi me-2" width="40" height="32">
+                    <use xlink:href="#bootstrap"></use>
+                </svg>
+                <span class="fs-4">Vedette</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills mb-auto flex-column">
+                <li>
+                    <a href="{% url 'issue-list' %}" class="nav-link link-dark">Issues</a>
+                </li>
+                <li>
+                    <a href="{% url 'event-list' %}" class="nav-link link-dark">Events</a>
+                </li>
+                <li class="border-top my-3"></li>
+                <li>
+                    <a href="{% url 'admin:index' %}" class="nav-link link-dark">Admin panel</a>
+                </li>
+                <li>
+                    <a href="{% url 'logout' %}" class="nav-link link-dark">Logout</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-10">
+          {% block page_content %}{% endblock %}
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

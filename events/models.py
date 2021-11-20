@@ -258,7 +258,9 @@ class Event(models.Model):
         code.extend(stacktrace.get("post_context", []))
 
         if "lineno" in stacktrace:
-            offset = stacktrace["lineno"] - len(stacktrace.get("pre_context", []))
+            offset = (
+                stacktrace["lineno"] - len(stacktrace.get("pre_context", []))
+            )
             code = [
                 f"{index + offset}) {line}"
                 for index, line in enumerate(code)
@@ -278,7 +280,9 @@ class Event(models.Model):
                 "module": _stacktrace.get("module"),
                 "code": self._create_code_snippet(_stacktrace)
             }
-            for _stacktrace in values[0].get("stacktrace", {}).get("frames", [])
+            for _stacktrace in (
+                values[0].get("stacktrace", {}).get("frames", [])
+            )
         ]
 
 
