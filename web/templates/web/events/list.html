@@ -25,9 +25,7 @@
                 <span>{{ event.exception_message }}</span>
                 {% endif %}
                 <br/>
-                <small class="text-secondary">Occurred at {{
-                    event.timestamp|date:"r" }} in {{ event.project.name
-                    }}</small>
+                <small class="text-secondary">Occurred at {{ event.timestamp|date:"r" }} in {{ event.project.name }}</small>
             </td>
             <td class="text-center">
                 {% if event.level %}
