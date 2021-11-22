@@ -12,7 +12,7 @@
             <th>Issue</th>
             <th class="text-center">Level</th>
             <th class="text-center">Status</th>
-            <th></th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
@@ -49,8 +49,7 @@
             </td>
             <td class="text-center">
                 <div class="btn-group">
-                    <a class="btn btn-primary btn-sm"
-                       href="{% url 'issue-details' issue.id %}">View</a>
+                    <a class="btn btn-primary btn-sm" href="{% url 'issue-details' issue.id %}">View</a>
                 </div>
             </td>
         </tr>
@@ -61,8 +60,7 @@
     <nav class="pagination justify-content-center">
         {% if page_obj.has_previous %}
         <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
-        <li class="page-item"><a class="page-link"
-                                 href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
         </li>
         {% endif %}
 
@@ -71,11 +69,9 @@
         </li>
 
         {% if page_obj.has_next %}
-        <li class="page-item"><a class="page-link"
-                                 href="?page={{ page_obj.next_page_number }}">Next</a>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
         </li>
-        <li class="page-item"><a class="page-link"
-                                 href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
         </li>
         {% endif %}
     </nav>
