@@ -105,7 +105,8 @@ def capture_event(project_id, public_key, event_data):
 
     event.issue = issue
     with transaction.atomic():
-        issue.save()
+        if issue is not None:
+            issue.save()
         raw_event.save()
         event.save()
 
