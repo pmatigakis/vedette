@@ -13,6 +13,7 @@ class EventListView(LoginRequiredMixin, ListView):
     paginate_by = 10
     template_name = "web/events/list.html"
     ordering = ["-timestamp"]
+    queryset = Event.objects.get_unresolved()
 
 
 class EventDetailsView(LoginRequiredMixin, DetailView):
@@ -37,6 +38,7 @@ class IssueListView(LoginRequiredMixin, ListView):
     paginate_by = 10
     template_name = "web/issues/list.html"
     ordering = ["-last_seen_at"]
+    queryset = Issue.objects.get_unresolved()
 
 
 class IssueEventsListView(LoginRequiredMixin, ListView):
