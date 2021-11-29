@@ -4,7 +4,7 @@ from datetime import datetime
 from django.db import models
 
 from .constants import LOG_LEVELS, SUPPORTED_PLATFORMS
-from .managers import EventManager
+from .managers import EventManager, IssueManager
 
 
 class RawEvent(models.Model):
@@ -168,6 +168,7 @@ class Event(models.Model):
 
 
 class Issue(models.Model):
+    objects = IssueManager()
     project = models.ForeignKey(
         "projects.Project", blank=False, null=False, on_delete=models.CASCADE
     )
