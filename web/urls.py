@@ -9,7 +9,8 @@ from .views import (
     EventListView,
     event_details_json,
     IssueListView,
-    IssueEventsListView
+    IssueEventsListView,
+    set_event_resolution_status
 )
 
 urlpatterns = [
@@ -31,6 +32,11 @@ urlpatterns = [
         name="event-details-json"
     ),
     path("events/<pk>/", EventDetailsView.as_view(), name="event-details"),
+    path(
+        "events/<event_id>/resolution",
+        set_event_resolution_status,
+        name="event-set-resolution-status"
+    ),
     path("events/<pk>/data", EventDataView.as_view(), name="event-data"),
     path("accounts/login/", auth_views.LoginView.as_view(), name="login"),
     path("accounts/logout/", auth_views.LogoutView.as_view(), name="logout"),

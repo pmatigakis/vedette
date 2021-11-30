@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
@@ -60,3 +60,21 @@ class IssueEventsListView(LoginRequiredMixin, ListView):
             issue=issue,
             **kwargs
         )
+
+
+def set_event_resolution_status(request, event_id):
+    resolved = request.GET.get("resolved")
+    if not resolved:
+        return HttpResponseBadRequest()
+
+    resolved = resolved.lower()
+    if resolved not in ["true", "false"]:
+        return HttpResponseBadRequest()
+
+    event = get_object_or_404(Event, pk=event_id)
+    if resolved == "true":
+        Event.objects.resolve(event)
+    else:
+        Event.objects.unresolve(event)
+
+    return redirect("event-details", pk=event.id)
