@@ -27,6 +27,11 @@
             {% endif %}
         </p>
         <a href="{% url 'event-details' issue.primary_event.id %}" class="btn btn-primary">View event</a>
+        {% if issue.resolved %}
+          <a href="{% url 'issue-set-resolution-status' issue_id=issue.id %}?resolved=false" class="btn btn-primary">Unresolve</a>
+        {% else %}
+          <a href="{% url 'issue-set-resolution-status' issue_id=issue.id %}?resolved=true" class="btn btn-primary">Resolve</a>
+        {% endif %}
       </div>
     </div>
 

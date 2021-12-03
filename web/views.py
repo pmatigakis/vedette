@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse, HttpResponseBadRequest
@@ -78,3 +79,23 @@ def set_event_resolution_status(request, event_id):
         Event.objects.unresolve(event)
 
     return redirect("event-details", pk=event.id)
+
+
+def set_issue_resolution_status(request, issue_id):
+    resolved = request.GET.get("resolved")
+    if not resolved:
+        return HttpResponseBadRequest()
+
+    resolved = resolved.lower()
+    if resolved not in ["true", "false"]:
+        return HttpResponseBadRequest()
+
+    issue = get_object_or_404(Issue, pk=issue_id)
+    if resolved == "true":
+        with transaction.atomic():
+            Issue.objects.resolve(issue)
+            Event.objects.resolve_by_issue(issue)
+    else:
+        Issue.objects.unresolve(issue)
+
+    return redirect("issue-details", pk=issue.id)
