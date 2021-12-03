@@ -50,7 +50,9 @@
             <td class="text-center">
                 <div class="btn-group">
                     <a class="btn btn-primary btn-sm" href="{% url 'event-details' event.id %}">View</a>
-                    <a class="btn btn-primary btn-sm" href="{% url 'issue-details' event.issue.id %}">Issue</a>
+                    {% if event.issue %}
+                      <a class="btn btn-primary btn-sm" href="{% url 'issue-details' event.issue.id %}">Issue</a>
+                    {% endif %}
                     <a class="btn btn-primary btn-sm" href="{% url 'event-details-json' event.id %}">Json</a>
                 </div>
             </td>

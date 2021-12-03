@@ -9,30 +9,132 @@
       <div class="card-body">
         <h5 class="card-title">{{ issue.primary_event.message }}</h5>
         <h6 class="card-subtitle mb-2 text-muted">First seen at {{ issue.first_seen_at|date:"r" }}, last seen at {{ issue.last_seen_at|date:"r" }} in {{ issue.project.name }}</h6>
-        <p class="card-text">
-            <span class="badge bg-dark">{% if issue.primary_event.user %}{{ issue.primary_event.user }}{% else %}Unknown user{% endif %}</span>
-            {% if issue.primary_event.runtime_tag_value %}<span class="badge bg-dark">platform:{{ issue.primary_event.platform }}</span>{% endif %}
-            {% if issue.primary_event.environment %}<span class="badge bg-dark">environment:{{ issue.primary_event.environment }}</span>{% endif %}
-            <span class="badge bg-dark">handled:{{ issue.primary_event.handled }}</span>
-            {% if issue.primary_event.level %}<span class="badge bg-dark">level:{{ issue.primary_event.level }}</span>{% endif %}
-            {% if issue.primary_event.logger %}<span class="badge bg-dark">logger:{{ issue.primary_event.logger }}</span>{% endif %}
-            {% if issue.primary_event.mechanism %}<span class="badge bg-dark">mechanism:{{ issue.primary_event.mechanism }}</span>{% endif %}
-            {% if issue.primary_event.runtime_tag_value %}<span class="badge bg-dark">runtime:{{ issue.primary_event.runtime_tag_value }}</span>{% endif %}
-            {% if issue.primary_event.runtime_name %}<span class="badge bg-dark">runtime-name:{{ issue.primary_event.runtime_name }}</span>{% endif %}
-            {% if issue.primary_event.server_name %}<span class="badge bg-dark">server-name:{{ issue.primary_event.server_name }}</span>{% endif %}
-            {% if issue.primary_event.transaction %}<span class="badge bg-dark">transaction:{{ issue.primary_event.transaction }}</span>{% endif %}
-            {% if issue.primary_event.user %}<span class="badge bg-dark">user:{{ issue.primary_event.user }}</span>{% endif %}
-            {% if issue.primary_event.user_defined_tags %}
-              {% for key, value in issue.primary_event.user_defined_tags.items %}<span class="badge bg-dark">{{ key }}:{{ value }}</span>{% endfor %}
-            {% endif %}
-        </p>
-        <a href="{% url 'event-details' issue.primary_event.id %}" class="btn btn-primary">View event</a>
-        {% if issue.resolved %}
-          <a href="{% url 'issue-set-resolution-status' issue_id=issue.id %}?resolved=false" class="btn btn-primary">Unresolve</a>
-        {% else %}
-          <a href="{% url 'issue-set-resolution-status' issue_id=issue.id %}?resolved=true" class="btn btn-primary">Resolve</a>
-        {% endif %}
-      </div>
+
+          <div class="row">
+              <div class="col-12 col-md-12 col-lg-10 order-2 order-md-1">
+
+                  <div class="row">
+                      <div class="col-12 col-sm-4">
+                          <div class="info-box bg-light">
+                              <div class="info-box-content">
+                                  <span class="info-box-text text-center text-muted">ID</span>
+                                  <span class="info-box-text text-center text-muted mb-0">{{ issue.id }}</span>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-12 col-sm-4">
+                          <div class="info-box bg-light">
+                              <div class="info-box-content">
+                                  <span class="info-box-text text-center text-muted">Level</span>
+                                  {% if issue.primary_event.level %}
+                                  {% if issue.primary_event.level == "error" or issue.primary_event.level == "fatal" %}
+                                  <span class="badge bg-danger">{{ issue.primary_event.level }}</span>
+                                  {% elif issue.primary_event.level == "warning" %}
+                                  <span class="badge bg-warning">{{ issue.primary_event.level }}</span>
+                                  {% else %}
+                                  <span class="badge bg-primary">{{ issue.primary_event.level }}</span>
+                                  {% endif %}
+                                  {% else %}
+                                  <span class="badge bg-secondary">Undefined</span>
+                                  {% endif %}
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-12 col-sm-4">
+                          <div class="info-box bg-light">
+                              <div class="info-box-content">
+                                  <span class="info-box-text text-center text-muted">Status</span>
+                                  {% if issue.resolved %}
+                                  <span class="badge bg-success">Resolved</span>
+                                  {% else %}
+                                  <span class="badge bg-warning">Unresolved</span>
+                                  {% endif %}
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <p class="card-text">
+                      <span class="badge bg-dark">{% if issue.primary_event.user %}{{ issue.primary_event.user }}{% else %}Unknown user{% endif %}</span>
+                      {% if issue.primary_event.runtime_tag_value %}
+                        <span class="badge bg-dark">platform:{{ issue.primary_event.platform }}</span>
+                      {% endif %}
+                      {% if issue.primary_event.environment %}
+                        <span class="badge bg-dark">environment:{{ issue.primary_event.environment }}</span>
+                      {% endif %}
+                        <span class="badge bg-dark">handled:{{ issue.primary_event.handled }}</span>
+                      {% if issue.primary_event.level %}
+                        <span class="badge bg-dark">level:{{ issue.primary_event.level }}</span>
+                      {% endif %}
+                      {% if issue.primary_event.logger %}
+                        <span class="badge bg-dark">logger:{{ issue.primary_event.logger }}</span>
+                      {% endif %}
+                      {% if issue.primary_event.mechanism %}
+                        <span class="badge bg-dark">mechanism:{{ issue.primary_event.mechanism }}</span>
+                      {% endif %}
+                      {% if issue.primary_event.runtime_tag_value %}
+                        <span class="badge bg-dark">runtime:{{ issue.primary_event.runtime_tag_value }}</span>
+                      {% endif %}
+                      {% if issue.primary_event.runtime_name %}
+                        <span class="badge bg-dark">runtime-name:{{ issue.primary_event.runtime_name }}</span>
+                      {% endif %}
+                      {% if issue.primary_event.server_name %}
+                        <span class="badge bg-dark">server-name:{{ issue.primary_event.server_name }}</span>
+                      {% endif %}
+                      {% if issue.primary_event.transaction %}
+                        <span class="badge bg-dark">transaction:{{ issue.primary_event.transaction }}</span>
+                      {% endif %}
+                      {% if issue.primary_event.user %}<span class="badge bg-dark">user:{{ issue.primary_event.user }}</span>
+                      {% endif %}
+                      {% if issue.primary_event.user_defined_tags %}
+                      {% for key, value in issue.primary_event.user_defined_tags.items %}
+                        <span class="badge bg-dark">{{ key }}:{{ value }}</span>
+                      {% endfor %}
+                      {% endif %}
+                  </p>
+              </div>
+
+      <div class="col-12 col-md-12 col-lg-2 order-1 order-md-2">
+          {% if issue.primary_event %}
+          <h5 class="mt-2 text-muted">Event views</h5>
+        <ul class="list-unstyled">
+            <li>
+                <a href="{% url 'event-details' issue.primary_event.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Event details</a>
+            </li>
+            <li>
+                <a href="{% url 'event-data' issue.primary_event.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Event data</a>
+            </li>
+        </ul>
+          {% endif %}
+
+            <h5 class="mt-4 text-muted">Admin</h5>
+            <ul class="list-unstyled">
+                <li>
+                    <a href="{% url 'admin:events_issue_change' issue.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Issue</a>
+                </li>
+                {% if issue.primary_event %}
+                <li>
+                    <a href="{% url 'admin:events_event_change' issue.primary_event.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Event</a>
+                </li>
+                {% endif %}
+                <li>
+                    <a href="{% url 'admin:projects_project_change' issue.project.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Project</a>
+                </li>
+            </ul>
+
+            <h5 class="mt-4 text-muted">Action</h5>
+            <ul class="list-unstyled">
+                {% if not issue.resolved %}
+                <li>
+                    <a href="{% url 'issue-set-resolution-status' issue_id=issue.id %}?resolved=true" class="btn-link text-secondary">Resolve</a>
+                </li>
+                {% else %}
+                <li>
+                    <a href="{% url 'issue-set-resolution-status' issue_id=issue.id %}?resolved=false" class="btn-link text-secondary">Unresolve</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
 
     <table class="table table-striped">
