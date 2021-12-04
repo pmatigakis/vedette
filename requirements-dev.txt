@@ -1,5 +1,6 @@
-flake8
+bandit
 black
 coverage
+flake8
 isort
 pre-commit
