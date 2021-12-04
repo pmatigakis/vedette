@@ -4,13 +4,13 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.db import transaction
 
-from events.models import RawEvent, Issue
+from events.models import Issue, RawEvent
 from projects.models import Project
 
 from .exceptions import (
     EventAlreadyProcessed,
     InvalidEventData,
-    InvalidProjectPublicKey
+    InvalidProjectPublicKey,
 )
 from .serializers import EventSerializer, RawEventSerializer
 from .signatures import calculate_event_signature
@@ -66,8 +66,7 @@ def capture_event(project_id, public_key, event_data):
         raise EventAlreadyProcessed()
 
     raw_event = raw_event_serializer.save(
-        project_id=project_id,
-        data=event_data
+        project_id=project_id, data=event_data
     )
 
     event_serializer = EventSerializer(data=raw_event.data)
@@ -76,16 +75,14 @@ def capture_event(project_id, public_key, event_data):
         raise InvalidEventData()
 
     event = event_serializer.save(
-        raw_event=raw_event,
-        project=raw_event.project
+        raw_event=raw_event, project=raw_event.project
     )
 
     signature = calculate_event_signature(event_data)
     issue = None
     if signature is not None:
         issue = Issue.objects.filter(
-            project=project,
-            signature=signature
+            project=project, signature=signature
         ).first()
 
         if not issue:
@@ -94,7 +91,7 @@ def capture_event(project_id, public_key, event_data):
                 signature=signature,
                 primary_event=event,
                 first_seen_at=event.timestamp,
-                last_seen_at=event.timestamp
+                last_seen_at=event.timestamp,
             )
 
         if event.timestamp < issue.first_seen_at:

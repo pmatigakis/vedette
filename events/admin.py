@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Event, RawEvent, Issue
+from .models import Event, Issue, RawEvent
 
 
 class RawEventAdmin(admin.ModelAdmin):
@@ -52,7 +52,7 @@ class IssueAdmin(admin.ModelAdmin):
         "view_message",
         "first_seen_at",
         "last_seen_at",
-        "resolved"
+        "resolved",
     )
 
     fields = (
@@ -66,7 +66,7 @@ class IssueAdmin(admin.ModelAdmin):
         "updated_at",
         "resolved_at",
         "first_seen_at",
-        "last_seen_at"
+        "last_seen_at",
     )
 
     def has_add_permission(self, request):

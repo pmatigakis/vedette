@@ -1,12 +1,12 @@
-from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.db import transaction
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
-from events.models import Event, RawEvent, Issue
+from events.models import Event, Issue, RawEvent
 
 
 class EventListView(LoginRequiredMixin, ListView):
@@ -57,9 +57,7 @@ class IssueEventsListView(LoginRequiredMixin, ListView):
         issue = Issue.objects.get(pk=self.kwargs["pk"])
 
         return super(IssueEventsListView, self).get_context_data(
-            object_list=object_list,
-            issue=issue,
-            **kwargs
+            object_list=object_list, issue=issue, **kwargs
         )
 
 

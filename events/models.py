@@ -40,7 +40,7 @@ class Event(models.Model):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        related_name="events"
+        related_name="events",
     )
     raw_event = models.OneToOneField(
         "RawEvent",
@@ -124,11 +124,13 @@ class Event(models.Model):
                 "message": breadcrumb.get("message"),
                 "level": breadcrumb.get("level"),
                 "time": self._timestamp_string_to_datetime(
-                    breadcrumb.get("timestamp")),
-                "data": self._pretty_json_data(breadcrumb.get("data"))
+                    breadcrumb.get("timestamp")
+                ),
+                "data": self._pretty_json_data(breadcrumb.get("data")),
             }
-            for breadcrumb in self.raw_event.data.get(
-                "breadcrumbs", {}).get("values", [])
+            for breadcrumb in self.raw_event.data.get("breadcrumbs", {}).get(
+                "values", []
+            )
         ]
 
     def _create_code_snippet(self, stacktrace):
@@ -139,12 +141,11 @@ class Event(models.Model):
         code.extend(stacktrace.get("post_context", []))
 
         if "lineno" in stacktrace:
-            offset = (
-                stacktrace["lineno"] - len(stacktrace.get("pre_context", []))
+            offset = stacktrace["lineno"] - len(
+                stacktrace.get("pre_context", [])
             )
             code = [
-                f"{index + offset}) {line}"
-                for index, line in enumerate(code)
+                f"{index + offset}) {line}" for index, line in enumerate(code)
             ]
 
         return "\n".join(code)
@@ -159,7 +160,7 @@ class Event(models.Model):
                 "vars": _stacktrace.get("vars", {}),
                 "lineno": _stacktrace.get("lineno"),
                 "module": _stacktrace.get("module"),
-                "code": self._create_code_snippet(_stacktrace)
+                "code": self._create_code_snippet(_stacktrace),
             }
             for _stacktrace in (
                 values[0].get("stacktrace", {}).get("frames", [])
@@ -178,13 +179,11 @@ class Issue(models.Model):
         blank=False,
         null=False,
         on_delete=models.CASCADE,
-        related_name="primary_issues"
+        related_name="primary_issues",
     )
     resolved = models.BooleanField(blank=False, null=False, default=False)
     created_at = models.DateTimeField(
-        auto_now_add=True,
-        blank=False,
-        null=False
+        auto_now_add=True, blank=False, null=False
     )
     updated_at = models.DateTimeField(auto_now=True, blank=False, null=False)
     resolved_at = models.DateTimeField(blank=True, null=True)

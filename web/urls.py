@@ -7,11 +7,11 @@ from .views import (
     EventDataView,
     EventDetailsView,
     EventListView,
-    event_details_json,
-    IssueListView,
     IssueEventsListView,
+    IssueListView,
+    event_details_json,
     set_event_resolution_status,
-    set_issue_resolution_status
+    set_issue_resolution_status,
 )
 
 urlpatterns = [
@@ -20,28 +20,24 @@ urlpatterns = [
         RedirectView.as_view(url="/static/favicon.ico", permanent=True),
     ),
     path(
-        "",
-        RedirectView.as_view(url="/issues", permanent=True),
-        name="index"
+        "", RedirectView.as_view(url="/issues", permanent=True), name="index"
     ),
     path("issues/", IssueListView.as_view(), name="issue-list"),
     path("issues/<pk>/", IssueEventsListView.as_view(), name="issue-details"),
     path(
         "issues/<issue_id>/resolution",
         set_issue_resolution_status,
-        name="issue-set-resolution-status"
+        name="issue-set-resolution-status",
     ),
     path("events/", EventListView.as_view(), name="event-list"),
     path(
-        "events/<event_id>.json",
-        event_details_json,
-        name="event-details-json"
+        "events/<event_id>.json", event_details_json, name="event-details-json"
     ),
     path("events/<pk>/", EventDetailsView.as_view(), name="event-details"),
     path(
         "events/<event_id>/resolution",
         set_event_resolution_status,
-        name="event-set-resolution-status"
+        name="event-set-resolution-status",
     ),
     path("events/<pk>/data", EventDataView.as_view(), name="event-data"),
     path("accounts/login/", auth_views.LoginView.as_view(), name="login"),

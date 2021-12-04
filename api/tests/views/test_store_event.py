@@ -16,8 +16,7 @@ class StoreEventTests(TestCase):
 
     @patch("api.views.capture_event.apply_async")
     def test_store_event_requires_authentication(
-            self,
-            capture_event_apply_async_mock
+        self, capture_event_apply_async_mock
     ):
         client = APIClient()
         response = client.post(
@@ -37,8 +36,7 @@ class StoreEventTests(TestCase):
 
     @patch("api.views.capture_event.apply_async")
     def test_store_event_requires_valid_authentication(
-        self,
-        capture_event_apply_async_mock
+        self, capture_event_apply_async_mock
     ):
         client = APIClient()
         client.credentials(HTTP_X_SENTRY_AUTH="invalid-authentication")
@@ -60,8 +58,7 @@ class StoreEventTests(TestCase):
 
     @patch("api.views.capture_event.apply_async")
     def test_store_event_requires_valid_sentry_key(
-        self,
-        capture_event_apply_async_mock
+        self, capture_event_apply_async_mock
     ):
         client = APIClient()
         client.credentials(
@@ -113,8 +110,7 @@ class StoreEventTests(TestCase):
 
     @patch("api.views.capture_event.apply_async")
     def test_store_event_rejects_event_with_missing_attribute(
-        self,
-        capture_event_apply_async_mock
+        self, capture_event_apply_async_mock
     ):
         event = {
             "event_id": "5d167e7d21004858ae9dfba46d370377",

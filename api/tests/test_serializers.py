@@ -1,10 +1,10 @@
-from datetime import timezone, timedelta, datetime
+from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 from django.test import TestCase
 
-from api.serializers import RawEventSerializer, EventSerializer
-from events.models import RawEvent, Event
+from api.serializers import EventSerializer, RawEventSerializer
+from events.models import Event, RawEvent
 from projects.models import Project
 
 
@@ -19,7 +19,7 @@ class RawEventSerializerTests(TestCase):
         data = {
             "event_id": "b553a92eaba94939b4e4d6725253c1c5",
             "timestamp": "2021-08-22T18:19:51.690616Z",
-            "platform": "python"
+            "platform": "python",
         }
         serializer = RawEventSerializer(data=data)
 
@@ -29,7 +29,7 @@ class RawEventSerializerTests(TestCase):
         data = {
             "event_id": "b553a92eaba94939b4e4d6725253c1c5",
             "timestamp": "2021-08-22T18:19:51.690616Z",
-            "platform": "python"
+            "platform": "python",
         }
 
         for key in data.keys():
@@ -39,22 +39,19 @@ class RawEventSerializerTests(TestCase):
 
             self.assertFalse(
                 serializer.is_valid(),
-                f"should not be valid if key '{key}' is missing"
+                f"should not be valid if key '{key}' is missing",
             )
 
     def test_create_raw_event(self):
         data = {
             "event_id": "b553a92eaba94939b4e4d6725253c1c5",
             "timestamp": "2021-08-22T18:19:51.690616Z",
-            "platform": "python"
+            "platform": "python",
         }
         serializer = RawEventSerializer(data=data)
 
         serializer.is_valid()
-        raw_event = serializer.save(
-            project_id=self.project.id,
-            data=data
-        )
+        raw_event = serializer.save(project_id=self.project.id, data=data)
         self.assertIsInstance(raw_event, RawEvent)
         self.assertEqual(raw_event.id, UUID(data["event_id"]))
         self.assertEqual(raw_event.project, self.project)
@@ -64,7 +61,7 @@ class RawEventSerializerTests(TestCase):
         data = {
             "event_id": "b553a92eaba94939b4e4d6725253c1c5",
             "timestamp": "2021-08-22T18:19:51.690616Z",
-            "platform": "python"
+            "platform": "python",
         }
 
         raw_event = RawEvent(
@@ -80,7 +77,7 @@ class RawEventSerializerTests(TestCase):
             RuntimeError,
             serializer.save,
             project_id=self.project.id,
-            data=data
+            data=data,
         )
 
         self.assertEqual(RawEvent.objects.count(), 1)
@@ -105,8 +102,8 @@ class EventSerializerTests(TestCase):
             "server_name": "my-server",
             "logentry": {
                 "message": "this is a log message by %s",
-                "params": ["admin"]
-            }
+                "params": ["admin"],
+            },
         }
         serializer = EventSerializer(data=data)
 
@@ -116,7 +113,7 @@ class EventSerializerTests(TestCase):
         data = {
             "event_id": "b553a92eaba94939b4e4d6725253c1c5",
             "timestamp": "2021-08-22T18:19:51.690616Z",
-            "platform": "python"
+            "platform": "python",
         }
         serializer = EventSerializer(data=data)
 
@@ -134,8 +131,8 @@ class EventSerializerTests(TestCase):
             "server_name": "my-server",
             "logentry": {
                 "message": "this is a log message by %s",
-                "params": ["admin"]
-            }
+                "params": ["admin"],
+            },
         }
 
         for key in ["event_id", "timestamp", "platform"]:
@@ -145,7 +142,7 @@ class EventSerializerTests(TestCase):
 
             self.assertFalse(
                 serializer.is_valid(),
-                f"should not be valid if key '{key}' is missing"
+                f"should not be valid if key '{key}' is missing",
             )
 
     def test_create_event_with_all_fields(self):
@@ -160,8 +157,8 @@ class EventSerializerTests(TestCase):
             "server_name": "my-server",
             "logentry": {
                 "message": "this is a log message by %s",
-                "params": ["admin"]
-            }
+                "params": ["admin"],
+            },
         }
         raw_event = RawEvent(
             id=UUID(data["event_id"]),
@@ -173,10 +170,7 @@ class EventSerializerTests(TestCase):
         serializer = EventSerializer(data=data)
 
         serializer.is_valid()
-        event = serializer.save(
-            raw_event=raw_event,
-            project=self.project
-        )
+        event = serializer.save(raw_event=raw_event, project=self.project)
         event.save()
 
         self.assertIsInstance(event, Event)
@@ -186,7 +180,7 @@ class EventSerializerTests(TestCase):
         self.assertIsNone(event.issue)
         self.assertEqual(
             event.timestamp,
-            datetime(2021, 8, 22, 18, 19, 51, 690616, tzinfo=timezone.utc)
+            datetime(2021, 8, 22, 18, 19, 51, 690616, tzinfo=timezone.utc),
         )
         self.assertEqual(event.platform, "python")
         self.assertEqual(event.message, "this is a log message by admin")
@@ -207,12 +201,12 @@ class EventSerializerTests(TestCase):
         self.assertAlmostEqual(
             event.created_at,
             datetime.utcnow().replace(tzinfo=timezone.utc),
-            delta=timedelta(seconds=5)
+            delta=timedelta(seconds=5),
         )
         self.assertAlmostEqual(
             event.updated_at,
             datetime.utcnow().replace(tzinfo=timezone.utc),
-            delta=timedelta(seconds=5)
+            delta=timedelta(seconds=5),
         )
         self.assertIsNone(event.resolved_at)
 
@@ -220,7 +214,7 @@ class EventSerializerTests(TestCase):
         data = {
             "event_id": "b553a92eaba94939b4e4d6725253c1c5",
             "timestamp": "2021-08-22T18:19:51.690616Z",
-            "platform": "python"
+            "platform": "python",
         }
         raw_event = RawEvent(
             id=UUID(data["event_id"]),
@@ -232,10 +226,7 @@ class EventSerializerTests(TestCase):
         serializer = EventSerializer(data=data)
 
         serializer.is_valid()
-        event = serializer.save(
-            raw_event=raw_event,
-            project=self.project
-        )
+        event = serializer.save(raw_event=raw_event, project=self.project)
         event.save()
 
         self.assertIsInstance(event, Event)
@@ -245,12 +236,11 @@ class EventSerializerTests(TestCase):
         self.assertIsNone(event.issue)
         self.assertEqual(
             event.timestamp,
-            datetime(2021, 8, 22, 18, 19, 51, 690616, tzinfo=timezone.utc)
+            datetime(2021, 8, 22, 18, 19, 51, 690616, tzinfo=timezone.utc),
         )
         self.assertEqual(event.platform, "python")
         self.assertEqual(
-            event.message,
-            "Event - b553a92eaba94939b4e4d6725253c1c5"
+            event.message, "Event - b553a92eaba94939b4e4d6725253c1c5"
         )
         self.assertIsNone(event.logger)
         self.assertIsNone(event.level)
@@ -269,12 +259,12 @@ class EventSerializerTests(TestCase):
         self.assertAlmostEqual(
             event.created_at,
             datetime.utcnow().replace(tzinfo=timezone.utc),
-            delta=timedelta(seconds=5)
+            delta=timedelta(seconds=5),
         )
         self.assertAlmostEqual(
             event.updated_at,
             datetime.utcnow().replace(tzinfo=timezone.utc),
-            delta=timedelta(seconds=5)
+            delta=timedelta(seconds=5),
         )
         self.assertIsNone(event.resolved_at)
 
@@ -282,7 +272,7 @@ class EventSerializerTests(TestCase):
         data = {
             "event_id": "b553a92eaba94939b4e4d6725253c1c5",
             "timestamp": "2021-08-22T18:19:51.690616Z",
-            "platform": "python"
+            "platform": "python",
         }
 
         raw_event = RawEvent(
@@ -296,7 +286,7 @@ class EventSerializerTests(TestCase):
             id=raw_event.id,
             project=self.project,
             raw_event=raw_event,
-            timestamp=datetime.utcnow().replace(tzinfo=timezone.utc)
+            timestamp=datetime.utcnow().replace(tzinfo=timezone.utc),
         )
         event.save()
 
@@ -306,7 +296,7 @@ class EventSerializerTests(TestCase):
             RuntimeError,
             serializer.save,
             raw_event=raw_event,
-            project=self.project
+            project=self.project,
         )
 
         self.assertEqual(Event.objects.count(), 1)

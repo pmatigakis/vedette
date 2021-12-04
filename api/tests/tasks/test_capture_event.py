@@ -4,7 +4,7 @@ from uuid import UUID
 from django.test import TestCase
 
 from api.tasks import capture_event
-from events.models import Event, RawEvent, Issue
+from events.models import Event, Issue, RawEvent
 from projects.models import Project
 
 
@@ -20,7 +20,7 @@ class CaptureEventTests(TestCase):
             "event_id": "5d167e7d21004858ae9dfba46d370377",
             "timestamp": "2021-08-22T18:26:04.994971Z",
             "platform": "python",
-            "message": "msg"
+            "message": "msg",
         }
 
         raw_event_id = capture_event(
@@ -52,11 +52,11 @@ class CaptureEventTests(TestCase):
         self.assertEqual(issue.project, self.project)
         self.assertEqual(
             issue.signature,
-            "58939aecce76e0dc21230f1a60bad39fbf84837cf1ea2954ef0f03167b16f660"
+            "58939aecce76e0dc21230f1a60bad39fbf84837cf1ea2954ef0f03167b16f660",
         )
         self.assertEqual(
             issue.first_seen_at,
-            datetime(2021, 8, 22, 18, 26, 4, 994971, tzinfo=timezone.utc)
+            datetime(2021, 8, 22, 18, 26, 4, 994971, tzinfo=timezone.utc),
         )
         self.assertEqual(issue.last_seen_at, issue.first_seen_at)
         self.assertEqual(event.issue, issue)
@@ -65,7 +65,7 @@ class CaptureEventTests(TestCase):
         event_data = {
             "event_id": "5d167e7d21004858ae9dfba46d370377",
             "timestamp": "2021-08-22T18:26:04.994971Z",
-            "platform": "python"
+            "platform": "python",
         }
 
         raw_event_id = capture_event(
