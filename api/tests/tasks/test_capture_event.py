@@ -3,6 +3,7 @@ from uuid import UUID
 
 from django.test import TestCase
 
+from api.exceptions import InvalidEventData
 from api.tasks import capture_event
 from events.models import Event, Issue, RawEvent
 from projects.models import Project
@@ -16,11 +17,12 @@ class CaptureEventTests(TestCase):
         self.project.save()
 
     def test_capture_event(self):
+        event_message = "msg"
         event_data = {
             "event_id": "5d167e7d21004858ae9dfba46d370377",
             "timestamp": "2021-08-22T18:26:04.994971Z",
             "platform": "python",
-            "message": "msg",
+            "message": event_message,
         }
 
         raw_event_id = capture_event(
@@ -39,11 +41,18 @@ class CaptureEventTests(TestCase):
         self.assertEqual(raw_event.project, self.project)
         self.assertDictEqual(raw_event.data, event_data)
 
+        event_timestamp = datetime(
+            2021, 8, 22, 18, 26, 4, 994971, tzinfo=timezone.utc
+        )
+
         self.assertEqual(Event.objects.count(), 1)
         event = Event.objects.get(raw_event=raw_event)
         self.assertEqual(event.id, UUID(event_data["event_id"]))
         self.assertEqual(event.project, self.project)
         self.assertEqual(event.raw_event, raw_event)
+        self.assertEqual(event.timestamp, event_timestamp)
+        self.assertEqual(event.platform, "python")
+        self.assertEqual(event.message, event_message)
 
         issues = Issue.objects.all()
         self.assertEqual(len(issues), 1)
@@ -56,7 +65,7 @@ class CaptureEventTests(TestCase):
         )
         self.assertEqual(
             issue.first_seen_at,
-            datetime(2021, 8, 22, 18, 26, 4, 994971, tzinfo=timezone.utc),
+            event_timestamp,
         )
         self.assertEqual(issue.last_seen_at, issue.first_seen_at)
         self.assertEqual(event.issue, issue)
@@ -84,12 +93,41 @@ class CaptureEventTests(TestCase):
         self.assertEqual(raw_event.project, self.project)
         self.assertDictEqual(raw_event.data, event_data)
 
+        event_timestamp = datetime(
+            2021, 8, 22, 18, 26, 4, 994971, tzinfo=timezone.utc
+        )
+
         self.assertEqual(Event.objects.count(), 1)
         event = Event.objects.get(raw_event=raw_event)
         self.assertEqual(event.id, UUID(event_data["event_id"]))
         self.assertEqual(event.project, self.project)
         self.assertEqual(event.raw_event, raw_event)
         self.assertIsNone(event.issue)
+        self.assertEqual(event.timestamp, event_timestamp)
+        self.assertEqual(event.platform, "python")
 
         issues = Issue.objects.all()
         self.assertEqual(len(issues), 0)
+
+    def test_capture_event_with_missing_required_field(self):
+        event_data = {
+            "event_id": "5d167e7d21004858ae9dfba46d370377",
+            "timestamp": "2021-08-22T18:26:04.994971Z",
+            "platform": "python",
+        }
+
+        for required_field_name in event_data.keys():
+            modified_event_data = event_data.copy()
+            del modified_event_data[required_field_name]
+
+            self.assertRaises(
+                InvalidEventData,
+                capture_event,
+                project_id=self.project.id,
+                public_key=str(self.project.public_key),
+                event_data=modified_event_data,
+            )
+
+            self.assertEqual(RawEvent.objects.count(), 0)
+            self.assertEqual(Event.objects.count(), 0)
+            self.assertEqual(Issue.objects.count(), 0)
