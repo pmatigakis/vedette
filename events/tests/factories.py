@@ -1,0 +1,66 @@
+from datetime import datetime, timezone
+from uuid import uuid4
+
+import factory
+
+from events.models import Event, Issue, RawEvent
+from projects.tests.factories import ProjectFactory
+
+
+class RawEventFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = RawEvent
+
+    id = factory.LazyFunction(lambda: uuid4())
+    project = factory.SubFactory(ProjectFactory)
+    data = factory.LazyFunction(lambda: {})
+    created_at = factory.LazyFunction(
+        lambda: datetime.utcnow().replace(tzinfo=timezone.utc)
+    )
+    updated_at = factory.LazyAttribute(lambda obj: obj.created_at)
+
+
+class IssueFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Issue
+
+    signature = "signature"
+    project = None
+    resolved = False
+    resolved_at = None
+    primary_event_id = None
+    created_at = factory.LazyFunction(
+        lambda: datetime.utcnow().replace(tzinfo=timezone.utc)
+    )
+    updated_at = factory.LazyAttribute(lambda obj: obj.created_at)
+    first_seen_at = factory.LazyAttribute(lambda obj: obj.created_at)
+    last_seen_at = factory.LazyAttribute(lambda obj: obj.created_at)
+
+
+class EventFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Event
+
+    id = factory.LazyFunction(lambda: uuid4())
+    project = factory.SubFactory(ProjectFactory)
+    raw_event = factory.SubFactory(
+        RawEventFactory,
+        id=factory.SelfAttribute("..id"),
+        project=factory.SelfAttribute("..project"),
+    )
+    timestamp = factory.LazyFunction(
+        lambda: datetime.utcnow().replace(tzinfo=timezone.utc)
+    )
+    platform = "python"
+    message = factory.Sequence(lambda n: f"event message {n}")
+    resolved = False
+    resolved_at = None
+    created_at = factory.LazyFunction(
+        lambda: datetime.utcnow().replace(tzinfo=timezone.utc)
+    )
+    updated_at = factory.LazyAttribute(lambda obj: obj.created_at)
+    issue = factory.SubFactory(
+        IssueFactory,
+        project=factory.SelfAttribute("..project"),
+        primary_event_id=factory.SelfAttribute("..id"),
+    )
