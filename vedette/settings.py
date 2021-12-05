@@ -146,7 +146,4 @@ LOGIN_REDIRECT_URL = "/"
 
 # celery settings
 CELERY_TIMEZONE = getenv("CELERY_TIMEZONE", "UTC")
-CELERY_RESULT_BACKEND = environ["CELERY_RESULT_BACKEND"]
 CELERY_BROKER_URL = environ["CELERY_BROKER_URL"]
-# results will expire in 5 minutes
-CELERY_RESULT_EXPIRES = int(getenv("CELERY_RESULT_EXPIRES", 60 * 5))
