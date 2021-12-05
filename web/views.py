@@ -54,7 +54,7 @@ class IssueEventsListView(LoginRequiredMixin, ListView):
         return queryset.filter(issue_id=self.kwargs["pk"])
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        issue = Issue.objects.get(pk=self.kwargs["pk"])
+        issue = get_object_or_404(Issue, pk=self.kwargs["pk"])
 
         return super(IssueEventsListView, self).get_context_data(
             object_list=object_list, issue=issue, **kwargs
