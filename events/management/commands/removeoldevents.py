@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from django.core.management.base import BaseCommand, CommandError
 
@@ -19,7 +19,9 @@ class Command(BaseCommand):
         if days <= 0:
             raise CommandError("Give a number of days greater than 0")
 
-        before_date = datetime.utcnow() - timedelta(days=days)
+        before_date = datetime.utcnow().replace(
+            tzinfo=timezone.utc
+        ) - timedelta(days=days)
         qs = RawEvent.objects.filter(created_at__lte=before_date)
         self.stdout.write(
             f"Deleting {qs.count()} events before "
