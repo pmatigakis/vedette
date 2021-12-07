@@ -24,8 +24,8 @@ class DeleteProjectTests(TestCase):
         self.assertFalse(Project.objects.filter(pk=project_1.id).exists())
         self.assertTrue(Project.objects.filter(pk=project_2.id).exists())
 
-    def test_delete_project_does_Nothing_hen_project_does_not_exist(self):
-        project_1 = ProjectFactory()
+    def test_delete_project_does_nothing_when_project_does_not_exist(self):
+        project = ProjectFactory()
 
         out = StringIO()
         with self.assertRaises(CommandError) as e:
@@ -35,4 +35,4 @@ class DeleteProjectTests(TestCase):
             ("A project with the name 'unknown-project' doesn't exist",),
         )
 
-        self.assertTrue(Project.objects.filter(pk=project_1.id).exists())
+        self.assertTrue(Project.objects.filter(pk=project.id).exists())
