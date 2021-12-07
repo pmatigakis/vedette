@@ -18,4 +18,4 @@ class Command(BaseCommand):
             )
 
         project.delete()
-        self.stdout.write(f"Deleted project with name {project.public_key}")
+        self.stdout.write(f"Deleted project with name {project.name}")
