@@ -1,7 +1,4 @@
 SECRET_KEY=secretkey
 DEBUG=false
-DB_HOST=localhost
-DB_USERNAME=username
-DB_PASSWORD=password
-DB_NAME=vedette
-CELERY_BROKER_URL=amqp://guest:guest@localhost:5672/vedette
+DATABASE_URL=postgres://username:password@host:port/vedette
+CELERY_BROKER_URL=amqp://guest:guest@host:port/vedette

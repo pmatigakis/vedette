@@ -15,6 +15,8 @@ from os import getenv, environ
 from pathlib import Path
 
 from dotenv import load_dotenv
+import dj_database_url
+
 
 load_dotenv(dotenv_path=getenv("ENV_PATH"))
 
@@ -86,16 +88,7 @@ WSGI_APPLICATION = "vedette.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "HOST": environ["DB_HOST"],
-        "PORT": int(getenv("DB_PORT", 5432)),
-        "USER": environ["DB_USERNAME"],
-        "PASSWORD": environ["DB_PASSWORD"],
-        "NAME": environ["DB_NAME"],
-    }
-}
+DATABASES = {"default": dj_database_url.config()}
 
 
 # Password validation
