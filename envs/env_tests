@@ -1,0 +1,7 @@
+SECRET_KEY=unit-test
+DEBUG=true
+DB_HOST=localhost
+DB_USERNAME=postgres
+DB_PASSWORD=1234
+DB_NAME=vedette_test
+CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672/vedette_test
