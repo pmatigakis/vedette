@@ -7,10 +7,12 @@ ADD events /app/events
 ADD web /app/web
 ADD api /app/api
 COPY manage.py /app
-COPY requirements.txt /app
+COPY pyproject.toml /app
 COPY docker-entrypoint.sh /app
 
-RUN pip install -r requirements.txt
+RUN pip install poetry==1.1.4
+RUN poetry config virtualenvs.create false
+RUN poetry install --no-dev
 
 EXPOSE 8000
 
