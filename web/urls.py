@@ -33,15 +33,19 @@ urlpatterns = [
     ),
     path("events/", EventListView.as_view(), name="event-list"),
     path(
-        "events/<event_id>.json", event_details_json, name="event-details-json"
+        "events/<uuid:event_id>.json",
+        event_details_json,
+        name="event-details-json",
     ),
-    path("events/<pk>/", EventDetailsView.as_view(), name="event-details"),
     path(
-        "events/<event_id>/resolution",
+        "events/<uuid:pk>/", EventDetailsView.as_view(), name="event-details"
+    ),
+    path(
+        "events/<uuid:event_id>/resolution",
         set_event_resolution_status,
         name="event-set-resolution-status",
     ),
-    path("events/<pk>/data", EventDataView.as_view(), name="event-data"),
+    path("events/uuid:<pk>/data", EventDataView.as_view(), name="event-data"),
     path("accounts/login/", auth_views.LoginView.as_view(), name="login"),
     path("accounts/logout/", auth_views.LogoutView.as_view(), name="logout"),
 ]
