@@ -23,9 +23,11 @@ urlpatterns = [
         "", RedirectView.as_view(url="/issues", permanent=True), name="index"
     ),
     path("issues/", IssueListView.as_view(), name="issue-list"),
-    path("issues/<pk>/", IssueEventsListView.as_view(), name="issue-details"),
     path(
-        "issues/<issue_id>/resolution",
+        "issues/<int:pk>/", IssueEventsListView.as_view(), name="issue-details"
+    ),
+    path(
+        "issues/<int:issue_id>/resolution",
         set_issue_resolution_status,
         name="issue-set-resolution-status",
     ),
