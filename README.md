@@ -10,7 +10,7 @@ tested and a lot of features that are available in Sentry are missing.
 
 The following applications are required.
 
-* Postgres version 9.5 or greater
+* PostgreSQL version 9.5 or greater
 * RabbitMQ version 3.5 or greater
 * Docker
 
