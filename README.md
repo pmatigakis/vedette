@@ -31,25 +31,31 @@ Run the database migrations.
 docker run --env-file .env vedette migrate
 ```
 
-Start the celery worker
+Build the static files.
+
+```bash
+docker run --env-file .env --mount source=vedette-static,target=/app/static vedette python manage.py collectstatic --noinput --clear 
+```
+
+Start the celery worker.
 
 ```bash
 docker run --env-file .env --name vedette-workers vedette workers
 ```
 
-Start the web server
+Start the web server.
 
 ```bash
-docker run --env-file .env --name vedette-web -p 8000:8000 vedette web
+docker run --env-file .env --name vedette-web -p 8000:8000 --mount source=vedette-static,target=/app/static,ro vedette web
 ```
 
-Create an administrator account
+Create an administrator account.
 
 ```bash
 docker exec -it vedette-web python manage.py createsuperuser
 ```
 
-Create a project
+Create a project.
 
 ```bash
 docker exec -it vedette-web python manage.py createproject <project-name>

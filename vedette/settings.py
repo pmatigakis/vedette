@@ -35,6 +35,10 @@ SECRET_KEY = environ["SECRET_KEY"]
 DEBUG = bool(strtobool(getenv("DEBUG", "false")))
 
 ALLOWED_HOSTS = []
+for allowed_host in getenv("ALLOWED_HOSTS", "").split(","):
+    allowed_host = allowed_host.strip()
+    if allowed_host:
+        ALLOWED_HOSTS.append(allowed_host)
 
 
 # Application definition
@@ -128,6 +132,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = "/static/"
+STATIC_ROOT = "static"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
