@@ -1,6 +1,9 @@
+from datetime import datetime, timedelta, timezone
+
 from django.test import TestCase
 
 from events.models import Event, RawEvent
+from events.tests.factories import EventFactory
 
 
 class EventTestsRuntimeTagValueTests(TestCase):
@@ -52,3 +55,24 @@ class EventLogParamsTests(TestCase):
         event = Event(raw_event=raw_event)
 
         self.assertEqual(event.log_params(), [])
+
+
+class EventResolveTests(TestCase):
+    def test_resolve(self):
+        event = EventFactory()
+        event.resolve()
+
+        self.assertTrue(event.resolved)
+        self.assertGreaterEqual(event.resolved_at, event.created_at)
+        self.assertAlmostEqual(
+            event.resolved_at,
+            datetime.now(tz=timezone.utc),
+            delta=timedelta(seconds=5),
+        )
+
+    def test_unserolve(self):
+        event = EventFactory(resolved=True, resolved_at=datetime.now())
+        event.unresolve()
+
+        self.assertFalse(event.resolved)
+        self.assertIsNone(event.resolved_at)

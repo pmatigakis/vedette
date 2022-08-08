@@ -12,21 +12,10 @@ class EventManager(Manager):
     def get_unresolved(self):
         return self.get_queryset().get_unresolved()
 
-    def resolve(self, event):
-        self.get_queryset().get_event(event.id).update(
-            resolved=True,
-            resolved_at=datetime.utcnow().replace(tzinfo=timezone.utc),
-        )
-
     def resolve_by_issue(self, issue):
         self.get_queryset().get_by_issue(issue.id).update(
             resolved=True,
             resolved_at=datetime.utcnow().replace(tzinfo=timezone.utc),
-        )
-
-    def unresolve(self, event):
-        self.get_queryset().get_event(event.id).update(
-            resolved=False, resolved_at=None
         )
 
 

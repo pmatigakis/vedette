@@ -85,6 +85,14 @@ class Event(models.Model):
             models.Index(fields=["timestamp"], name="ix__event__timestamp"),
         ]
 
+    def resolve(self):
+        self.resolved = True
+        self.resolved_at = datetime.utcnow().replace(tzinfo=timezone.utc)
+
+    def unresolve(self):
+        self.resolved = False
+        self.resolved_at = None
+
     def runtime_tag_value(self):
         components = []
         if self.runtime_name:

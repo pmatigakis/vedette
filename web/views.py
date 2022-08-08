@@ -72,9 +72,11 @@ def set_event_resolution_status(request, event_id):
 
     event = get_object_or_404(Event, pk=event_id)
     if resolved == "true":
-        Event.objects.resolve(event)
+        event.resolve()
     else:
-        Event.objects.unresolve(event)
+        event.unresolve()
+
+    event.save()
 
     return redirect("event-details", pk=event.id)
 
