@@ -4,9 +4,8 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from events.negotiation import IgnoreClientContentNegotiation
-from events.parsers import GzippedJSONParser
-
+from .negotiation import IgnoreClientContentNegotiation
+from .parsers import GzippedJSONParser
 from .serializers import RawEventSerializer
 from .tasks import capture_event
 
