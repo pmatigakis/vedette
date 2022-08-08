@@ -36,14 +36,3 @@ class IssueManager(Manager):
 
     def get_unresolved(self):
         return self.get_queryset().get_unresolved()
-
-    def resolve(self, issue):
-        self.get_queryset().get_issue(issue.id).update(
-            resolved=True,
-            resolved_at=datetime.utcnow().replace(tzinfo=timezone.utc),
-        )
-
-    def unresolve(self, issue):
-        self.get_queryset().get_issue(issue.id).update(
-            resolved=False, resolved_at=None
-        )

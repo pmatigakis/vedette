@@ -91,9 +91,11 @@ def set_issue_resolution_status(request, issue_id):
     issue = get_object_or_404(Issue, pk=issue_id)
     if resolved == "true":
         with transaction.atomic():
-            Issue.objects.resolve(issue)
+            issue.resolve()
+            issue.save()
             Event.objects.resolve_by_issue(issue)
     else:
-        Issue.objects.unresolve(issue)
+        issue.unresolve()
+        issue.save()
 
     return redirect("issue-details", pk=issue.id)

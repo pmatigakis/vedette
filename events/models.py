@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 from django.db import models
 
@@ -195,3 +195,11 @@ class Issue(models.Model):
         indexes = [
             models.Index(fields=["project_id"], name="ix__issue__project_id")
         ]
+
+    def resolve(self):
+        self.resolved = True
+        self.resolved_at = datetime.utcnow().replace(tzinfo=timezone.utc)
+
+    def unresolve(self):
+        self.resolved = False
+        self.resolved_at = None

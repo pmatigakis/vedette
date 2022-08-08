@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 from django.test import TestCase
 
@@ -22,42 +22,3 @@ class IssueManagerTests(TestCase):
         self.assertEqual(
             list(Issue.objects.get_unresolved()), [unresolved_issue]
         )
-
-    def test_resolve(self):
-        issue_to_resolve = IssueFactory()
-        issue_to_remain_unresolved = IssueFactory()
-
-        Issue.objects.resolve(issue_to_resolve)
-
-        issue_to_resolve.refresh_from_db()
-        self.assertTrue(issue_to_resolve.resolved)
-        self.assertAlmostEqual(
-            issue_to_resolve.resolved_at,
-            datetime.utcnow().replace(tzinfo=timezone.utc),
-            delta=timedelta(seconds=3),
-        )
-
-        issue_to_remain_unresolved.refresh_from_db()
-        self.assertFalse(issue_to_remain_unresolved.resolved)
-        self.assertIsNone(issue_to_remain_unresolved.resolved_at)
-
-    def test_unresolve(self):
-        resolved_at = datetime.utcnow().replace(tzinfo=timezone.utc)
-        issue_to_unresolve = IssueFactory(
-            resolved=True, resolved_at=resolved_at
-        )
-
-        issue_to_remain_resolved = IssueFactory(
-            resolved=True, resolved_at=resolved_at
-        )
-
-        Issue.objects.unresolve(issue_to_unresolve)
-
-        issue_to_unresolve.refresh_from_db()
-        issue_to_remain_resolved.refresh_from_db()
-
-        self.assertFalse(issue_to_unresolve.resolved)
-        self.assertIsNone(issue_to_unresolve.resolved_at)
-
-        self.assertTrue(issue_to_remain_resolved.resolved)
-        self.assertEqual(issue_to_remain_resolved.resolved_at, resolved_at)
