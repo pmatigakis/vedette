@@ -16,7 +16,7 @@ class RemoveOldEventsTests(TestCase):
         call_command("removeoldevents", "--days=3", stdout=out)
 
         self.assertIn(
-            "Deleting 0 events before 2021-11-28 00:00:00+00:00\n",
+            "Deleted 0 events before 2021-11-28 00:00:00+00:00\n",
             out.getvalue(),
         )
 
@@ -36,7 +36,7 @@ class RemoveOldEventsTests(TestCase):
         self.assertCountEqual(RawEvent.objects.all(), raw_events[0:3])
 
         self.assertIn(
-            "Deleting 4 events before 2021-11-28 00:00:00+00:00\n",
+            "Deleted 4 events before 2021-11-28 00:00:00+00:00\n",
             out.getvalue(),
         )
 
@@ -56,6 +56,6 @@ class RemoveOldEventsTests(TestCase):
         self.assertCountEqual(list(RawEvent.objects.all()), raw_events[0:7])
 
         self.assertIn(
-            "Deleting 7 events before 2021-11-24 00:00:00+00:00\n",
+            "Deleted 7 events before 2021-11-24 00:00:00+00:00\n",
             out.getvalue(),
         )
