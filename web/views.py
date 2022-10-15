@@ -41,6 +41,15 @@ class IssueListView(LoginRequiredMixin, ListView):
     ordering = ["-last_seen_at"]
     queryset = Issue.objects.get_unresolved()
 
+    def get_queryset(self):
+        queryset = super(IssueListView, self).get_queryset()
+
+        project = self.request.GET.get("project")
+        if project is not None:
+            queryset = queryset.filter(project_id=project)
+
+        return queryset
+
 
 class IssueEventsListView(LoginRequiredMixin, ListView):
     model = Event

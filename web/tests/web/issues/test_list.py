@@ -4,8 +4,7 @@ from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from events.models import Issue
-from events.tests.factories import IssueFactory
+from events.tests.factories import IssueFactory, ProjectFactory
 
 
 class IssueListTests(TestCase):
@@ -38,13 +37,14 @@ class IssueListTests(TestCase):
         self.assertTemplateUsed("web/issues/list.html")
 
     def test_list_issues(self):
-        IssueFactory()
+        issue_1 = IssueFactory(project=ProjectFactory())
+        issue_2 = IssueFactory(project=ProjectFactory())
 
         response = self.client.get(reverse("issue-list"))
 
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(
-            response.context["object_list"], list(Issue.objects.all())
+            response.context["object_list"], [issue_2, issue_1]
         )
         self.assertFalse(response.context["page_obj"].has_previous())
         self.assertFalse(response.context["page_obj"].has_next())
@@ -112,3 +112,32 @@ class IssueListTests(TestCase):
         self.assertNotIn("object_list", response.context)
         self.assertNotIn("page_obj", response.context)
         self.assertTemplateNotUsed("web/issue/list.html")
+
+    def test_list_issues_filter_using_project(self):
+        project_1 = ProjectFactory()
+        issue_1 = IssueFactory(project=project_1)
+        IssueFactory(project=ProjectFactory())
+
+        response = self.client.get(
+            reverse("issue-list"), {"project": project_1.id}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(response.context["object_list"], [issue_1])
+        self.assertFalse(response.context["page_obj"].has_previous())
+        self.assertFalse(response.context["page_obj"].has_next())
+        self.assertEqual(response.context["page_obj"].number, 1)
+        self.assertTemplateUsed("web/issues/list.html")
+
+    def test_list_issues_filter_using_project_that_does_not_exist(self):
+        IssueFactory(project=ProjectFactory())
+        IssueFactory(project=ProjectFactory())
+
+        response = self.client.get(reverse("issue-list"), {"project": 1000})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(response.context["object_list"], [])
+        self.assertFalse(response.context["page_obj"].has_previous())
+        self.assertFalse(response.context["page_obj"].has_next())
+        self.assertEqual(response.context["page_obj"].number, 1)
+        self.assertTemplateUsed("web/issues/list.html")
