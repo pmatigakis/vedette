@@ -55,6 +55,7 @@
                   </div>
 
                   <p class="card-text">
+                      <a href="{% url 'issue-list' %}?project={{ issue.project.id }}"><span class="badge bg-dark">project:{{ issue.project.name }}</span></a>
                       <span class="badge bg-dark">{% if issue.primary_event.user %}{{ issue.primary_event.user }}{% else %}Unknown user{% endif %}</span>
                       {% if issue.primary_event.runtime_tag_value %}
                         <span class="badge bg-dark">platform:{{ issue.primary_event.platform }}</span>

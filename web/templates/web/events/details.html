@@ -58,6 +58,7 @@
                     </div>
                     <div class="row">
                         <div class="col-12">
+                            <span class="badge bg-dark">project:{{ event.project.name }}</span>
                             <span class="badge bg-dark">{% if event.user %}{{ event.user }}{% else %}Unknown user{% endif %}</span>
                             {% if event.runtime_tag_value %}
                               <span class="badge bg-dark">platform:{{ event.platform }}</span>

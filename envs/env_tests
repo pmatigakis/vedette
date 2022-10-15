@@ -1,4 +1,4 @@
 SECRET_KEY=unit-test
 DEBUG=true
-DATABASE_URL=postgres://postgres:1234@localhost:5432/vedette_test
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/vedette_test
 CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672/vedette_test
