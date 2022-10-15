@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "django.contrib.postgres",
     "projects",
     "events",
     "api",
@@ -145,3 +146,6 @@ LOGIN_REDIRECT_URL = "/"
 # celery settings
 CELERY_TIMEZONE = getenv("CELERY_TIMEZONE", "UTC")
 CELERY_BROKER_URL = environ["CELERY_BROKER_URL"]
+
+# search settings
+SEARCH_RESULTS_PER_PAGE = 20

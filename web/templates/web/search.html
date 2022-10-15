@@ -1,0 +1,81 @@
+{% extends 'web/base.html' %}
+
+{% block title %}Vedette - Search results{% endblock %}
+
+{% block page_content %}
+<div class="row">
+    <h1 class="h3 mb-4">Issues</h1>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Issue</th>
+            <th class="text-center">Level</th>
+            <th class="text-center">Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for issue in object_list %}
+        <tr>
+            <td>
+                <span class="fw-bold">{{ issue.primary_event.message }}</span>
+                {% if issue.primary_event.exception_message %}
+                <br/>
+                <span>{{ issue.primary_event.exception_message }}</span>
+                {% endif %}
+                <br/>
+                <small class="text-secondary">Last seen at {{ issue.last_seen_at|date:"r" }} in {{ issue.project.name }}</small>
+            </td>
+            <td class="text-center">
+                {% if issue.primary_event.level %}
+                {% if issue.primary_event.level == "error" or issue.primary_event.level == "fatal" %}
+                <span class="badge bg-danger">{{ issue.primary_event.level }}</span>
+                {% elif issue.primary_event.level == "warning" %}
+                <span class="badge bg-warning">{{ issue.primary_event.level }}</span>
+                {% else %}
+                <span class="badge bg-primary">{{ issue.primary_event.level }}</span>
+                {% endif %}
+                {% else %}
+                <span class="badge bg-secondary">Undefined</span>
+                {% endif %}
+            </td>
+            <td class="text-center">
+                {% if issue.resolved %}
+                <span class="badge bg-success">Resolved</span>
+                {% else %}
+                <span class="badge bg-warning">Unresolved</span>
+                {% endif %}
+            </td>
+            <td class="text-center">
+                <div class="btn-group">
+                    <a class="btn btn-primary btn-sm" href="{% url 'issue-details' issue.id %}">View</a>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <nav class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page=1&query={{ query }}">First</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&query={{ query }}">Previous</a>
+        </li>
+        {% endif %}
+
+        {% if object_list %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.number }}&query={{ query }}">Page {{ page_obj.number }}</a>
+        </li>
+        {% endif %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&query={{ query }}">Next</a>
+        </li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&query={{ query }}">Last</a>
+        </li>
+        {% endif %}
+    </nav>
+</div>
+{% endblock %}

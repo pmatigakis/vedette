@@ -10,6 +10,7 @@ from .views import (
     IssueEventsListView,
     IssueListView,
     event_details_json,
+    search,
     set_event_resolution_status,
     set_issue_resolution_status,
 )
@@ -46,6 +47,7 @@ urlpatterns = [
         name="event-set-resolution-status",
     ),
     path("events/uuid:<pk>/data", EventDataView.as_view(), name="event-data"),
+    path("search", search, name="search"),
     path("accounts/login/", auth_views.LoginView.as_view(), name="login"),
     path("accounts/logout/", auth_views.LogoutView.as_view(), name="logout"),
 ]

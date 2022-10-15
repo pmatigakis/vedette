@@ -1,12 +1,16 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.http import HttpResponseBadRequest, JsonResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_http_methods
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
 from events.models import Event, Issue, RawEvent
+from web.forms import SearchForm
 
 
 class EventListView(LoginRequiredMixin, ListView):
@@ -110,3 +114,33 @@ def set_issue_resolution_status(request, issue_id):
         issue.save()
 
     return redirect("issue-details", pk=issue.id)
+
+
+@require_http_methods(["GET"])
+def search(request):
+    page = int(request.GET.get("page", 1))
+    form = SearchForm(request.GET)
+    if not form.is_valid():
+        return render(
+            request,
+            "web/400.html",
+            {"error": "invalid search text"},
+            status=400,
+        )
+
+    query = form.cleaned_data["query"]
+    queryset = Issue.objects.filter(events__message__search=query).distinct()
+    paginator = Paginator(queryset, settings.SEARCH_RESULTS_PER_PAGE)
+    page_obj = paginator.get_page(page)
+
+    return render(
+        request,
+        "web/search.html",
+        {
+            "object_list": page_obj.object_list,
+            "page_obj": page_obj,
+            "paginator": paginator,
+            "query": query,
+            "form": form,
+        },
+    )
