@@ -1,6 +1,8 @@
 import json
 from datetime import datetime, timezone
 
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVector
 from django.db import models
 
 from .constants import LOG_LEVELS, SUPPORTED_PLATFORMS
@@ -83,6 +85,15 @@ class Event(models.Model):
         indexes = [
             models.Index(fields=["project_id"], name="ix__event__project_id"),
             models.Index(fields=["timestamp"], name="ix__event__timestamp"),
+            GinIndex(
+                SearchVector(
+                    "message",
+                    "log_message",
+                    "exception_message",
+                    config="english",
+                ),
+                name="events_search_vector_idx",
+            ),
         ]
 
     def resolve(self):
