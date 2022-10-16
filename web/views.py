@@ -1,7 +1,11 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.postgres.search import SearchVector
+from django.contrib.postgres.search import (
+    SearchQuery,
+    SearchRank,
+    SearchVector,
+)
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.http import HttpResponseBadRequest, JsonResponse
@@ -130,17 +134,16 @@ def search(request):
         )
 
     query = form.cleaned_data["query"]
-    queryset = (
-        Issue.objects.annotate(
-            search=SearchVector(
-                "events__message",
-                "events__log_message",
-                "events__exception_message",
-            )
-        )
-        .filter(search=query)
-        .distinct("primary_event")
+    search_vector = SearchVector(
+        "primary_event__message",
+        "primary_event__log_message",
+        "primary_event__exception_message",
     )
+    search_query = SearchQuery(query)
+    queryset = Issue.objects.annotate(
+        rank=SearchRank(search_vector, search_query)
+    ).order_by("-rank", "id")
+
     paginator = Paginator(queryset, settings.SEARCH_RESULTS_PER_PAGE)
     page_obj = paginator.get_page(page)
 
