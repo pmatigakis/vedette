@@ -10,7 +10,7 @@ COPY manage.py /app
 COPY pyproject.toml /app
 COPY docker-entrypoint.sh /app
 
-RUN pip install poetry==1.1.4
+RUN pip install poetry==1.1.13
 RUN poetry config virtualenvs.create false
 RUN poetry install --no-dev
 
