@@ -47,6 +47,8 @@ class EventFactory(factory.django.DjangoModelFactory):
         RawEventFactory,
         id=factory.SelfAttribute("..id"),
         project=factory.SelfAttribute("..project"),
+        created_at=factory.SelfAttribute("..created_at"),
+        updated_at=factory.SelfAttribute("..updated_at"),
     )
     timestamp = factory.LazyFunction(
         lambda: datetime.utcnow().replace(tzinfo=timezone.utc)

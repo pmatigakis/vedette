@@ -6,7 +6,7 @@ from django.test import TestCase
 from freezegun import freeze_time
 
 from events.models import RawEvent
-from events.tests.factories import RawEventFactory
+from events.tests.factories import EventFactory, RawEventFactory
 
 
 class RemoveOldEventsTests(TestCase):
@@ -57,5 +57,31 @@ class RemoveOldEventsTests(TestCase):
 
         self.assertIn(
             "Deleted 7 events before 2021-11-24 00:00:00+00:00\n",
+            out.getvalue(),
+        )
+
+    @freeze_time("2021-12-01")
+    def test_run_command_only_deletes_raw_events_without_primary_events(self):
+        current_datetime = datetime(2021, 12, 1, tzinfo=timezone.utc)
+        primary_event_1 = EventFactory()
+        primary_event_1.created_at = current_datetime - timedelta(days=7)
+        primary_event_1.save()
+        primary_event_1.raw_event.created_at = primary_event_1.created_at
+        primary_event_1.raw_event.save()
+        extra_event = EventFactory(issue=primary_event_1.issue)
+        extra_event.created_at = current_datetime - timedelta(days=7)
+        extra_event.save()
+        extra_event.raw_event.created_at = extra_event.created_at
+        extra_event.raw_event.save()
+
+        out = StringIO()
+        call_command("removeoldevents", "--days=3", stdout=out)
+
+        self.assertCountEqual(
+            RawEvent.objects.all(), [primary_event_1.raw_event]
+        )
+
+        self.assertIn(
+            "Deleted 2 events before 2021-11-28 00:00:00+00:00\n",
             out.getvalue(),
         )

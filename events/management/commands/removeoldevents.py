@@ -2,8 +2,9 @@ from datetime import datetime, timedelta, timezone
 from itertools import islice
 
 from django.core.management.base import BaseCommand, CommandError
+from django.db.models import Q
 
-from events.models import RawEvent
+from events.models import Issue, RawEvent
 
 
 class Command(BaseCommand):
@@ -23,11 +24,20 @@ class Command(BaseCommand):
         before_date = datetime.utcnow().replace(
             tzinfo=timezone.utc
         ) - timedelta(days=days)
+
+        primary_event_query = Issue.objects.exclude(
+            primary_event__isnull=True
+        ).values_list("primary_event", flat=True)
+
         qs = (
             RawEvent.objects.values_list("pk")
-            .filter(created_at__lte=before_date)
+            .exclude(
+                Q(event__in=primary_event_query)
+                | Q(created_at__gt=before_date)
+            )
             .iterator()
         )
+
         deleted_raw_event_count = 0
         while True:
             raw_event_ids = [item[0] for item in list(islice(qs, 100))]
