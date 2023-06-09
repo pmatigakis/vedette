@@ -1,4 +1,4 @@
-FROM python:3.9.4
+FROM python:3.10.12
 WORKDIR /app
 
 ADD vedette /app/vedette
@@ -10,9 +10,9 @@ COPY manage.py /app
 COPY pyproject.toml /app
 COPY docker-entrypoint.sh /app
 
-RUN pip install poetry==1.1.13
+RUN pip install poetry==1.4.2
 RUN poetry config virtualenvs.create false
-RUN poetry install --no-dev
+RUN poetry install --without dev
 
 EXPOSE 8000
 

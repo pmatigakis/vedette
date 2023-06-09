@@ -3,6 +3,7 @@ from itertools import islice
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
+from tqdm import tqdm
 
 from events.models import Issue, RawEvent
 
@@ -39,15 +40,17 @@ class Command(BaseCommand):
         )
 
         deleted_raw_event_count = 0
-        while True:
-            raw_event_ids = [item[0] for item in list(islice(qs, 100))]
-            if not raw_event_ids:
-                break
+        with tqdm() as pbar:
+            while True:
+                raw_event_ids = [item[0] for item in list(islice(qs, 100))]
+                if not raw_event_ids:
+                    break
 
-            raw_events_deleted, _ = RawEvent.objects.filter(
-                pk__in=raw_event_ids
-            ).delete()
-            deleted_raw_event_count += raw_events_deleted
+                raw_events_deleted, _ = RawEvent.objects.filter(
+                    pk__in=raw_event_ids
+                ).delete()
+                deleted_raw_event_count += raw_events_deleted
+                pbar.update(raw_events_deleted)
 
         self.stdout.write(
             f"Deleted {deleted_raw_event_count} events before "
