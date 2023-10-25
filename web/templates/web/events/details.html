@@ -15,9 +15,9 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-12 col-md-12 col-lg-10 order-2 order-md-1">
+                <div class="col-10">
                     <div class="row">
-                        <div class="col-12 col-sm-4">
+                        <div class="col-4">
                             <div class="info-box bg-light">
                                 <div class="info-box-content">
                                     <span class="info-box-text text-center text-muted">ID</span>
@@ -25,25 +25,25 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-sm-4">
+                        <div class="col-4">
                             <div class="info-box bg-light">
                                 <div class="info-box-content">
                                     <span class="info-box-text text-center text-muted">Level</span>
                                     {% if event.level %}
                                     {% if event.level == "error" or event.level == "fatal" %}
-                                      <span class="badge bg-danger">{{ event.level }}</span>
+                                    <span class="badge bg-danger">{{ event.level }}</span>
                                     {% elif event.level == "warning" %}
-                                      <span class="badge bg-warning">{{ event.level }}</span>
+                                    <span class="badge bg-warning">{{ event.level }}</span>
                                     {% else %}
-                                      <span class="badge bg-primary">{{ event.level }}</span>
+                                    <span class="badge bg-primary">{{ event.level }}</span>
                                     {% endif %}
                                     {% else %}
-                                      <span class="badge bg-secondary">Undefined</span>
+                                    <span class="badge bg-secondary">Undefined</span>
                                     {% endif %}
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-sm-4">
+                        <div class="col-4">
                             <div class="info-box bg-light">
                                 <div class="info-box-content">
                                     <span class="info-box-text text-center text-muted">Status</span>
@@ -61,73 +61,195 @@
                             <span class="badge bg-dark">project:{{ event.project.name }}</span>
                             <span class="badge bg-dark">{% if event.user %}{{ event.user }}{% else %}Unknown user{% endif %}</span>
                             {% if event.runtime_tag_value %}
-                              <span class="badge bg-dark">platform:{{ event.platform }}</span>
+                            <span class="badge bg-dark">platform:{{ event.platform }}</span>
                             {% endif %}
                             {% if event.environment %}
-                              <span class="badge bg-dark">environment:{{ event.environment }}</span>
+                            <span class="badge bg-dark">environment:{{ event.environment }}</span>
                             {% endif %}
                             <span class="badge bg-dark">handled:{{ event.handled }}</span>
                             {% if event.level %}
-                              <span class="badge bg-dark">level:{{ event.level }}</span>
+                            <span class="badge bg-dark">level:{{ event.level }}</span>
                             {% endif %}
                             {% if event.logger %}
-                              <span class="badge bg-dark">logger:{{ event.logger }}</span>
+                            <span class="badge bg-dark">logger:{{ event.logger }}</span>
                             {% endif %}
                             {% if event.mechanism %}
-                              <span class="badge bg-dark">mechanism:{{ event.mechanism }}</span>
+                            <span class="badge bg-dark">mechanism:{{ event.mechanism }}</span>
                             {% endif %}
                             {% if event.runtime_tag_value %}
-                              <span class="badge bg-dark">runtime:{{ event.runtime_tag_value }}</span>
+                            <span class="badge bg-dark">runtime:{{ event.runtime_tag_value }}</span>
                             {% endif %}
                             {% if event.runtime_name %}
-                              <span class="badge bg-dark">runtime-name:{{ event.runtime_name }}</span>
+                            <span class="badge bg-dark">runtime-name:{{ event.runtime_name }}</span>
                             {% endif %}
                             {% if event.server_name %}
-                              <span class="badge bg-dark">server-name:{{ event.server_name }}</span>
+                            <span class="badge bg-dark">server-name:{{ event.server_name }}</span>
                             {% endif %}
                             {% if event.transaction %}
-                              <span class="badge bg-dark">transaction:{{ event.transaction }}</span>
+                            <span class="badge bg-dark">transaction:{{ event.transaction }}</span>
                             {% endif %}
                             {% if event.user %}<span class="badge bg-dark">user:{{ event.user }}</span>{% endif %}
                             {% if event.user_defined_tags %}
-                              {% for key, value in event.user_defined_tags.items %}
-                                <span class="badge bg-dark">{{ key }}:{{ value }}</span>
-                              {% endfor %}
+                            {% for key, value in event.user_defined_tags.items %}
+                            <span class="badge bg-dark">{{ key }}:{{ value }}</span>
+                            {% endfor %}
                             {% endif %}
                         </div>
                     </div>
+                    <div class="row">
+                        {% if event.log_message %}
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Message</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <p>{{ event.log_message }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
 
+                        {% if event.exception_message %}
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Exception</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h4>{{ event.message }}</h4>
+                                        <p>{{ event.exception_message }}</p>
+                                        <table class="table table-striped">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Handled</td>
+                                                    <td>{{ event.handled }}</td>
+                                                </tr>
+                                                {% if event.mechanism %}
+                                                <tr>
+                                                    <td>Mechanism</td>
+                                                    <td>{{ event.mechanism }}</td>
+                                                </tr>
+                                                {% endif %}
+                                                {% if event.mechanism %}
+                                                <tr>
+                                                    <td>Logger</td>
+                                                    <td>{{ event.logger }}</td>
+                                                </tr>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                {% if event.stacktraces %}
+                                {% for stacktrace in event.stacktraces %}
+                                <div class="row">
+                                    <div>module {{ stacktrace.module }} at line {{ stacktrace.lineno }}
+                                    </div>
+                                    <div class="col-12">
+                                        <pre>{{ stacktrace.code }}</pre>
+                                    </div>
+                                    <table class="table table-bordered table-striped">
+                                        {% for k, v in stacktrace.vars.items %}
+                                        <tr>
+                                            <th scope="row">{{ k }}</th>
+                                            <td>{{ v }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if event.breadcrumbs %}
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Breadcrumbs</h3>
+                            </div>
+                            <div class="card-body">
+                                {% for breadcrumb in event.breadcrumbs %}
+                                <table class="table table-bordered table-striped">
+                                    <tr>
+                                        <th scope="row">Time</th>
+                                        <td>{{ breadcrumb.time }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Type</th>
+                                        <td>{{ breadcrumb.type }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Category</th>
+                                        <td>{{ breadcrumb.category }}</td>
+                                    </tr>
+                                    {% if breadcrumb.level %}
+                                    <tr>
+                                        <th scope="row">Level</th>
+                                        <td>{{ breadcrumb.level }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% if breadcrumb.message %}
+                                    <tr>
+                                        <th scope="row">Message</th>
+                                        <td>{{ breadcrumb.message }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% if breadcrumb.data %}
+                                    <tr>
+                                        <th scope="row">Data</th>
+                                        <td>
+                                            <pre><code class="language-json">{{ breadcrumb.data }}</code></pre>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                </table>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="col-12 col-md-12 col-lg-2 order-1 order-md-2">
+                <div class="col-2">
                     <h5 class="mt-2 text-muted">Event views</h5>
                     <ul class="list-unstyled">
                         {% if object.issue %}
                         <li>
-                            <a href="{% url 'issue-details' object.issue.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Issue</a>
+                            <a href="{% url 'issue-details' object.issue.id %}" class="btn-link text-secondary"><i
+                                    class="far fa-fw fa-file-word"></i>Issue</a>
                         </li>
                         {% endif %}
                         <li>
-                            <a href="{% url 'event-data' object.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Event data</a>
+                            <a href="{% url 'event-data' object.id %}" class="btn-link text-secondary"><i
+                                    class="far fa-fw fa-file-word"></i>Event data</a>
                         </li>
                     </ul>
 
                     <h5 class="mt-4 text-muted">Event files</h5>
                     <ul class="list-unstyled">
                         <li>
-                            <a href="{% url 'event-details-json' object.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>raw-event.json</a>
+                            <a href="{% url 'event-details-json' object.id %}" class="btn-link text-secondary"><i
+                                    class="far fa-fw fa-file-word"></i>raw-event.json</a>
                         </li>
                     </ul>
 
                     <h5 class="mt-4 text-muted">Admin</h5>
                     <ul class="list-unstyled">
                         <li>
-                            <a href="{% url 'admin:events_event_change' event.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Event</a>
+                            <a href="{% url 'admin:events_event_change' event.id %}" class="btn-link text-secondary"><i
+                                    class="far fa-fw fa-file-word"></i>Event</a>
                         </li>
                         <li>
-                            <a href="{% url 'admin:events_rawevent_change' event.raw_event.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Raw Event</a>
+                            <a href="{% url 'admin:events_rawevent_change' event.raw_event.id %}"
+                                class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Raw Event</a>
                         </li>
                         <li>
-                            <a href="{% url 'admin:projects_project_change' event.project.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Project</a>
+                            <a href="{% url 'admin:projects_project_change' event.project.id %}"
+                                class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Project</a>
                         </li>
                     </ul>
 
@@ -135,11 +257,13 @@
                     <ul class="list-unstyled">
                         {% if not event.resolved %}
                         <li>
-                            <a href="{% url 'event-set-resolution-status' event_id=event.id %}?resolved=true" class="btn-link text-secondary">Resolve</a>
+                            <a href="{% url 'event-set-resolution-status' event_id=event.id %}?resolved=true"
+                                class="btn-link text-secondary">Resolve</a>
                         </li>
                         {% else %}
                         <li>
-                            <a href="{% url 'event-set-resolution-status' event_id=event.id %}?resolved=false" class="btn-link text-secondary">Unresolve</a>
+                            <a href="{% url 'event-set-resolution-status' event_id=event.id %}?resolved=false"
+                                class="btn-link text-secondary">Unresolve</a>
                         </li>
                         {% endif %}
                     </ul>
@@ -148,121 +272,7 @@
         </div>
     </div>
 
-    {% if event.log_message %}
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Message</h3>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-12">
-                    <p>{{ event.log_message }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
 
-    {% if event.exception_message %}
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Exception</h3>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-12">
-                    <h4>{{ event.message }}</h4>
-                    <p>{{ event.exception_message }}</p>
-                    <table class="table table-striped">
-                        <tbody>
-                        <tr>
-                            <td>Handled</td>
-                            <td>{{ event.handled }}</td>
-                        </tr>
-                        {% if event.mechanism %}
-                        <tr>
-                            <td>Mechanism</td>
-                            <td>{{ event.mechanism }}</td>
-                        </tr>
-                        {% endif %}
-                        {% if event.mechanism %}
-                        <tr>
-                            <td>Logger</td>
-                            <td>{{ event.logger }}</td>
-                        </tr>
-                        {% endif %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            {% if event.stacktraces %}
-                {% for stacktrace in event.stacktraces %}
-                <div class="row">
-                    <div>module {{ stacktrace.module }} at line {{ stacktrace.lineno }}
-                    </div>
-                    <div class="col-12">
-                        <pre>{{ stacktrace.code }}</pre>
-                    </div>
-                    <table class="table table-bordered table-striped">
-                        {% for k, v in stacktrace.vars.items %}
-                        <tr>
-                            <th scope="row">{{ k }}</th>
-                            <td>{{ v }}</td>
-                        </tr>
-                        {% endfor %}
-                    </table>
-                </div>
-                {% endfor %}
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
-
-    {% if event.breadcrumbs %}
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Breadcrumbs</h3>
-        </div>
-        <div class="card-body">
-            {% for breadcrumb in event.breadcrumbs %}
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th scope="row">Time</th>
-                        <td>{{ breadcrumb.time }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Type</th>
-                        <td>{{ breadcrumb.type }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Category</th>
-                        <td>{{ breadcrumb.category }}</td>
-                    </tr>
-                    {% if breadcrumb.level %}
-                    <tr>
-                        <th scope="row">Level</th>
-                        <td>{{ breadcrumb.level }}</td>
-                    </tr>
-                    {% endif %}
-                    {% if breadcrumb.message %}
-                    <tr>
-                        <th scope="row">Message</th>
-                        <td>{{ breadcrumb.message }}</td>
-                    </tr>
-                    {% endif %}
-                    {% if breadcrumb.data %}
-                    <tr>
-                        <th scope="row">Data</th>
-                        <td>
-                            <pre><code class="language-json">{{ breadcrumb.data }}</code></pre>
-                        </td>
-                    </tr>
-                    {% endif %}
-                </table>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
 
 </div>
 {% endblock %}
