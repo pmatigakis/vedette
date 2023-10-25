@@ -5,203 +5,223 @@
 {% block page_content %}
 <div class="row">
     <div class="card">
-      <h5 class="card-header">Issue - {{ issue.id }}</h5>
-      <div class="card-body">
-        <h5 class="card-title">{{ issue.primary_event.message }}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">First seen at {{ issue.first_seen_at|date:"r" }}, last seen at {{ issue.last_seen_at|date:"r" }} in {{ issue.project.name }}</h6>
+        <h5 class="card-header">Issue - {{ issue.id }}</h5>
+        <div class="card-body">
+            <h5 class="card-title">{{ issue.primary_event.message }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">First seen at {{ issue.first_seen_at|date:"r" }}, last seen at {{ issue.last_seen_at|date:"r" }} in {{ issue.project.name }}</h6>
 
-          <div class="row">
-              <div class="col-12 col-md-12 col-lg-10 order-2 order-md-1">
+            <div class="row">
+                <div class="col-10">
 
-                  <div class="row">
-                      <div class="col-12 col-sm-4">
-                          <div class="info-box bg-light">
-                              <div class="info-box-content">
-                                  <span class="info-box-text text-center text-muted">ID</span>
-                                  <span class="info-box-text text-center text-muted mb-0">{{ issue.id }}</span>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-12 col-sm-4">
-                          <div class="info-box bg-light">
-                              <div class="info-box-content">
-                                  <span class="info-box-text text-center text-muted">Level</span>
-                                  {% if issue.primary_event.level %}
-                                  {% if issue.primary_event.level == "error" or issue.primary_event.level == "fatal" %}
-                                  <span class="badge bg-danger">{{ issue.primary_event.level }}</span>
-                                  {% elif issue.primary_event.level == "warning" %}
-                                  <span class="badge bg-warning">{{ issue.primary_event.level }}</span>
-                                  {% else %}
-                                  <span class="badge bg-primary">{{ issue.primary_event.level }}</span>
-                                  {% endif %}
-                                  {% else %}
-                                  <span class="badge bg-secondary">Undefined</span>
-                                  {% endif %}
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-12 col-sm-4">
-                          <div class="info-box bg-light">
-                              <div class="info-box-content">
-                                  <span class="info-box-text text-center text-muted">Status</span>
-                                  {% if issue.resolved %}
-                                  <span class="badge bg-success">Resolved</span>
-                                  {% else %}
-                                  <span class="badge bg-warning">Unresolved</span>
-                                  {% endif %}
-                              </div>
-                          </div>
-                      </div>
-                  </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">ID</span>
+                                    <span class="info-box-text text-center text-muted mb-0">{{ issue.id }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">Level</span>
+                                    {% if issue.primary_event.level %}
+                                    {% if issue.primary_event.level == "error" or issue.primary_event.level == "fatal" %}
+                                    <span class="badge bg-danger">{{ issue.primary_event.level }}</span>
+                                    {% elif issue.primary_event.level == "warning" %}
+                                    <span class="badge bg-warning">{{ issue.primary_event.level }}</span>
+                                    {% else %}
+                                    <span class="badge bg-primary">{{ issue.primary_event.level }}</span>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="badge bg-secondary">Undefined</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">Status</span>
+                                    {% if issue.resolved %}
+                                    <span class="badge bg-success">Resolved</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">Unresolved</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                  <p class="card-text">
-                      <a href="{% url 'issue-list' %}?project={{ issue.project.id }}"><span class="badge bg-dark">project:{{ issue.project.name }}</span></a>
-                      <span class="badge bg-dark">{% if issue.primary_event.user %}{{ issue.primary_event.user }}{% else %}Unknown user{% endif %}</span>
-                      {% if issue.primary_event.runtime_tag_value %}
-                        <span class="badge bg-dark">platform:{{ issue.primary_event.platform }}</span>
-                      {% endif %}
-                      {% if issue.primary_event.environment %}
-                        <span class="badge bg-dark">environment:{{ issue.primary_event.environment }}</span>
-                      {% endif %}
-                        <span class="badge bg-dark">handled:{{ issue.primary_event.handled }}</span>
-                      {% if issue.primary_event.level %}
-                        <span class="badge bg-dark">level:{{ issue.primary_event.level }}</span>
-                      {% endif %}
-                      {% if issue.primary_event.logger %}
-                        <span class="badge bg-dark">logger:{{ issue.primary_event.logger }}</span>
-                      {% endif %}
-                      {% if issue.primary_event.mechanism %}
-                        <span class="badge bg-dark">mechanism:{{ issue.primary_event.mechanism }}</span>
-                      {% endif %}
-                      {% if issue.primary_event.runtime_tag_value %}
-                        <span class="badge bg-dark">runtime:{{ issue.primary_event.runtime_tag_value }}</span>
-                      {% endif %}
-                      {% if issue.primary_event.runtime_name %}
-                        <span class="badge bg-dark">runtime-name:{{ issue.primary_event.runtime_name }}</span>
-                      {% endif %}
-                      {% if issue.primary_event.server_name %}
-                        <span class="badge bg-dark">server-name:{{ issue.primary_event.server_name }}</span>
-                      {% endif %}
-                      {% if issue.primary_event.transaction %}
-                        <span class="badge bg-dark">transaction:{{ issue.primary_event.transaction }}</span>
-                      {% endif %}
-                      {% if issue.primary_event.user %}<span class="badge bg-dark">user:{{ issue.primary_event.user }}</span>
-                      {% endif %}
-                      {% if issue.primary_event.user_defined_tags %}
-                      {% for key, value in issue.primary_event.user_defined_tags.items %}
-                        <span class="badge bg-dark">{{ key }}:{{ value }}</span>
-                      {% endfor %}
-                      {% endif %}
-                  </p>
-              </div>
+                    <div class="row">
+                        <p class="card-text">
+                            <a href="{% url 'issue-list' %}?project={{ issue.project.id }}"><span
+                                    class="badge bg-dark">project:{{ issue.project.name }}</span></a>
+                            <span class="badge bg-dark">{% if issue.primary_event.user %}{{ issue.primary_event.user }}{% else %}Unknown user{% endif %}</span>
+                            {% if issue.primary_event.runtime_tag_value %}
+                            <span class="badge bg-dark">platform:{{ issue.primary_event.platform }}</span>
+                            {% endif %}
+                            {% if issue.primary_event.environment %}
+                            <span class="badge bg-dark">environment:{{ issue.primary_event.environment }}</span>
+                            {% endif %}
+                            <span class="badge bg-dark">handled:{{ issue.primary_event.handled }}</span>
+                            {% if issue.primary_event.level %}
+                            <span class="badge bg-dark">level:{{ issue.primary_event.level }}</span>
+                            {% endif %}
+                            {% if issue.primary_event.logger %}
+                            <span class="badge bg-dark">logger:{{ issue.primary_event.logger }}</span>
+                            {% endif %}
+                            {% if issue.primary_event.mechanism %}
+                            <span class="badge bg-dark">mechanism:{{ issue.primary_event.mechanism }}</span>
+                            {% endif %}
+                            {% if issue.primary_event.runtime_tag_value %}
+                            <span class="badge bg-dark">runtime:{{ issue.primary_event.runtime_tag_value }}</span>
+                            {% endif %}
+                            {% if issue.primary_event.runtime_name %}
+                            <span class="badge bg-dark">runtime-name:{{ issue.primary_event.runtime_name }}</span>
+                            {% endif %}
+                            {% if issue.primary_event.server_name %}
+                            <span class="badge bg-dark">server-name:{{ issue.primary_event.server_name }}</span>
+                            {% endif %}
+                            {% if issue.primary_event.transaction %}
+                            <span class="badge bg-dark">transaction:{{ issue.primary_event.transaction }}</span>
+                            {% endif %}
+                            {% if issue.primary_event.user %}
+                            <span class="badge bg-dark">user:{{ issue.primary_event.user }}</span>
+                            {% endif %}
+                            {% if issue.primary_event.user_defined_tags %}
+                            {% for key, value in issue.primary_event.user_defined_tags.items %}
+                            <span class="badge bg-dark">{{ key }}:{{ value }}</span>
+                            {% endfor %}
+                            {% endif %}
+                        </p>
+                    </div>
 
-      <div class="col-12 col-md-12 col-lg-2 order-1 order-md-2">
-          {% if issue.primary_event %}
-          <h5 class="mt-2 text-muted">Event views</h5>
-        <ul class="list-unstyled">
-            <li>
-                <a href="{% url 'event-details' issue.primary_event.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Event details</a>
-            </li>
-            <li>
-                <a href="{% url 'event-data' issue.primary_event.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Event data</a>
-            </li>
-        </ul>
-          {% endif %}
+                    <div class="row">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Event</th>
+                                    <th class="text-center">Level</th>
+                                    <th class="text-center">Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event in object_list %}
+                                <tr>
+                                    <td>
+                                        <span>{{ event.message }}</span>
+                                        {% if event.exception_message %}
+                                        <br />
+                                        <span>{{ event.exception_message }}</span>
+                                        {% endif %}
+                                        <br />
+                                        <small>Occurred at {{ event.timestamp|date:"r" }} in {{ event.project.name }}</small>
+                                    </td>
+                                    <td class="text-center">
+                                        {% if event.level %}
+                                        {% if event.level == "error" or event.level == "fatal" %}
+                                        <span class="badge bg-danger">{{ event.level }}</span>
+                                        {% elif event.level == "warning" %}
+                                        <span class="badge bg-warning">{{ event.level }}</span>
+                                        {% else %}
+                                        <span class="badge bg-primary">{{ event.level }}</span>
+                                        {% endif %}
+                                        {% else %}
+                                        <span class="badge bg-secondary">Undefined</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if event.resolved %}
+                                        <span class="badge bg-success">Resolved</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">Unresolved</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-right">
+                                        <div class="btn-group">
+                                            <a class="btn btn-primary btn-sm"
+                                                href="{% url 'event-details' event.id %}">View</a>
+                                            <a class="btn btn-primary btn-sm"
+                                                href="{% url 'event-details-json' event.id %}">Json</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
 
-            <h5 class="mt-4 text-muted">Admin</h5>
-            <ul class="list-unstyled">
-                <li>
-                    <a href="{% url 'admin:events_issue_change' issue.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Issue</a>
-                </li>
-                {% if issue.primary_event %}
-                <li>
-                    <a href="{% url 'admin:events_event_change' issue.primary_event.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Event</a>
-                </li>
-                {% endif %}
-                <li>
-                    <a href="{% url 'admin:projects_project_change' issue.project.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Project</a>
-                </li>
-            </ul>
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+                            <li class="page-item"><a class="page-link"
+                                    href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                            {% endif %}
 
-            <h5 class="mt-4 text-muted">Action</h5>
-            <ul class="list-unstyled">
-                {% if not issue.resolved %}
-                <li>
-                    <a href="{% url 'issue-set-resolution-status' issue_id=issue.id %}?resolved=true" class="btn-link text-secondary">Resolve</a>
-                </li>
-                {% else %}
-                <li>
-                    <a href="{% url 'issue-set-resolution-status' issue_id=issue.id %}?resolved=false" class="btn-link text-secondary">Unresolve</a>
-                </li>
-                {% endif %}
-            </ul>
-        </div>
-    </div>
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.number }}">Page {{ page_obj.number }}</a></li>
 
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Event</th>
-            <th class="text-center">Level</th>
-            <th class="text-center">Status</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for event in object_list %}
-        <tr>
-            <td>
-                <span>{{ event.message }}</span>
-                {% if event.exception_message %}
-                <br/>
-                <span>{{ event.exception_message }}</span>
-                {% endif %}
-                <br/>
-                <small>Occurred at {{ event.timestamp|date:"r" }} in {{ event.project.name }}</small>
-            </td>
-            <td class="text-center">
-                {% if event.level %}
-                {% if event.level == "error" or event.level == "fatal" %}
-                <span class="badge bg-danger">{{ event.level }}</span>
-                {% elif event.level == "warning" %}
-                <span class="badge bg-warning">{{ event.level }}</span>
-                {% else %}
-                <span class="badge bg-primary">{{ event.level }}</span>
-                {% endif %}
-                {% else %}
-                <span class="badge bg-secondary">Undefined</span>
-                {% endif %}
-            </td>
-            <td class="text-center">
-                {% if event.resolved %}
-                <span class="badge bg-success">Resolved</span>
-                {% else %}
-                <span class="badge bg-warning">Unresolved</span>
-                {% endif %}
-            </td>
-            <td class="text-right">
-                <div class="btn-group">
-                    <a class="btn btn-primary btn-sm" href="{% url 'event-details' event.id %}">View</a>
-                    <a class="btn btn-primary btn-sm" href="{% url 'event-details-json' event.id %}">Json</a>
+                            {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link"
+                                    href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                            <li class="page-item"><a class="page-link"
+                                    href="?page={{ page_obj.paginator.num_pages }}">Last</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
 
-    <ul class="pagination justify-content-center">
-        {% if page_obj.has_previous %}
-        <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
-        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
-        {% endif %}
+                <div class="col-2">
+                    {% if issue.primary_event %}
+                    <h5 class="mt-2 text-muted">Event views</h5>
+                    <ul class="list-unstyled">
+                        <li>
+                            <a href="{% url 'event-details' issue.primary_event.id %}"
+                                class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Event details</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'event-data' issue.primary_event.id %}" class="btn-link text-secondary"><i
+                                    class="far fa-fw fa-file-word"></i>Event data</a>
+                        </li>
+                    </ul>
+                    {% endif %}
 
-        <li class="page-item"><a class="page-link" href="?page={{ page_obj.number }}">Page {{ page_obj.number }}</a></li>
+                    <h5 class="mt-4 text-muted">Admin</h5>
+                    <ul class="list-unstyled">
+                        <li>
+                            <a href="{% url 'admin:events_issue_change' issue.id %}" class="btn-link text-secondary"><i
+                                    class="far fa-fw fa-file-word"></i>Issue</a>
+                        </li>
+                        {% if issue.primary_event %}
+                        <li>
+                            <a href="{% url 'admin:events_event_change' issue.primary_event.id %}"
+                                class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Event</a>
+                        </li>
+                        {% endif %}
+                        <li>
+                            <a href="{% url 'admin:projects_project_change' issue.project.id %}"
+                                class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Project</a>
+                        </li>
+                    </ul>
 
-        {% if page_obj.has_next %}
-        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
-        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a></li>
-        {% endif %}
-    </ul>
-</div>
-{% endblock %}
+                    <h5 class="mt-4 text-muted">Action</h5>
+                    <ul class="list-unstyled">
+                        {% if not issue.resolved %}
+                        <li>
+                            <a href="{% url 'issue-set-resolution-status' issue_id=issue.id %}?resolved=true"
+                                class="btn-link text-secondary">Resolve</a>
+                        </li>
+                        {% else %}
+                        <li>
+                            <a href="{% url 'issue-set-resolution-status' issue_id=issue.id %}?resolved=false"
+                                class="btn-link text-secondary">Unresolve</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+
+        </div>
+        {% endblock %}
