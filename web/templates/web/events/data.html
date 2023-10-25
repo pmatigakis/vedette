@@ -9,156 +9,167 @@
 {% block page_content %}
 <div class="row">
 
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-title">Event occurred at {{ event.timestamp|date:"r" }} in {{ event.project.name }}</h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-12 col-md-12 col-lg-10 order-2 order-md-1">
-                    <div class="row">
-                        <div class="col-12 col-sm-4">
-                            <div class="info-box bg-light">
-                                <div class="info-box-content">
-                                    <span class="info-box-text text-center text-muted">ID</span>
-                                    <span class="info-box-text text-center text-muted mb-0">{{ event.id }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-4">
-                            <div class="info-box bg-light">
-                                <div class="info-box-content">
-                                    <span class="info-box-text text-center text-muted">Level</span>
-                                    {% if event.level %}
-                                    {% if event.level == "error" or event.level == "fatal" %}
-                                      <span class="badge bg-danger">{{ event.level }}</span>
-                                    {% elif event.level == "warning" %}
-                                      <span class="badge bg-warning">{{ event.level }}</span>
-                                    {% else %}
-                                      <span class="badge bg-primary">{{ event.level }}</span>
-                                    {% endif %}
-                                    {% else %}
-                                      <span class="badge bg-secondary">Undefined</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-4">
-                            <div class="info-box bg-light">
-                                <div class="info-box-content">
-                                    <span class="info-box-text text-center text-muted">Status</span>
-                                    {% if event.resolved %}
-                                    <span class="badge bg-success">Resolved</span>
-                                    {% else %}
-                                    <span class="badge bg-warning">Unresolved</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <span class="badge bg-dark">{% if event.user %}{{ event.user }}{% else %}Unknown user{% endif %}</span>
-                            {% if event.runtime_tag_value %}
-                              <span class="badge bg-dark">platform:{{ event.platform }}</span>
-                            {% endif %}
-                            {% if event.environment %}
-                              <span class="badge bg-dark">environment:{{ event.environment }}</span>
-                            {% endif %}
-                            <span class="badge bg-dark">handled:{{ event.handled }}</span>
-                            {% if event.level %}
-                              <span class="badge bg-dark">level:{{ event.level }}</span>
-                            {% endif %}
-                            {% if event.logger %}
-                              <span class="badge bg-dark">logger:{{ event.logger }}</span>
-                            {% endif %}
-                            {% if event.mechanism %}
-                              <span class="badge bg-dark">mechanism:{{ event.mechanism }}</span>
-                            {% endif %}
-                            {% if event.runtime_tag_value %}
-                              <span class="badge bg-dark">runtime:{{ event.runtime_tag_value }}</span>
-                            {% endif %}
-                            {% if event.runtime_name %}
-                              <span class="badge bg-dark">runtime-name:{{ event.runtime_name }}</span>
-                            {% endif %}
-                            {% if event.server_name %}
-                              <span class="badge bg-dark">server-name:{{ event.server_name }}</span>
-                            {% endif %}
-                            {% if event.transaction %}
-                              <span class="badge bg-dark">transaction:{{ event.transaction }}</span>
-                            {% endif %}
-                            {% if event.user %}<span class="badge bg-dark">user:{{ event.user }}</span>{% endif %}
-                            {% if event.user_defined_tags %}
-                              {% for key, value in event.user_defined_tags.items %}
-                                <span class="badge bg-dark">{{ key }}:{{ value }}</span>
-                              {% endfor %}
-                            {% endif %}
-                        </div>
-                    </div>
-
-                </div>
-                <div class="col-12 col-md-12 col-lg-2 order-1 order-md-2">
-                    <h5 class="mt-2 text-muted">Event views</h5>
-                    <ul class="list-unstyled">
-                        {% if object.issue %}
-                        <li>
-                            <a href="{% url 'issue-details' object.issue.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Issue</a>
-                        </li>
-                        {% endif %}
-                        <li>
-                            <a href="{% url 'event-details' object.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Event details</a>
-                        </li>
-                    </ul>
-
-                    <h5 class="mt-4 text-muted">Event files</h5>
-                    <ul class="list-unstyled">
-                        <li>
-                            <a href="{% url 'event-details-json' object.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>raw-event.json</a>
-                        </li>
-                    </ul>
-
-                    <h5 class="mt-4 text-muted">Admin</h5>
-                    <ul class="list-unstyled">
-                        <li>
-                            <a href="{% url 'admin:events_event_change' event.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Event</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'admin:events_rawevent_change' event.raw_event.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Raw Event</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'admin:projects_project_change' event.project.id %}" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>Project</a>
-                        </li>
-                    </ul>
-
-                    <h5 class="mt-4 text-muted">Action</h5>
-                    <ul class="list-unstyled">
-                        {% if not event.resolved %}
-                        <li>
-                            <a href="{% url 'event-set-resolution-status' event_id=event.id %}?resolved=true" class="btn-link text-secondary">Resolve</a>
-                        </li>
-                        {% else %}
-                        <li>
-                            <a href="{% url 'event-set-resolution-status' event_id=event.id %}?resolved=false" class="btn-link text-secondary">Unresolve</a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </div>
-            </div>
-        </div>
+  <div class="card">
+    <div class="card-header">
+      <h5 class="card-title">Event occurred at {{ event.timestamp|date:"r" }} in {{ event.project.name }}</h5>
     </div>
-
-    <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Raw event data</h3>
-        </div>
-        <div class="card-body">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-10">
           <div class="row">
-            <div class="col-12">
-              <pre><code class="language-json">{{ object.raw_event.pretty_json_data }}</code></pre>
+            <div class="col-4">
+              <div class="info-box bg-light">
+                <div class="info-box-content">
+                  <span class="info-box-text text-center text-muted">ID</span>
+                  <span class="info-box-text text-center text-muted mb-0">{{ event.id }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="info-box bg-light">
+                <div class="info-box-content">
+                  <span class="info-box-text text-center text-muted">Level</span>
+                  {% if event.level %}
+                  {% if event.level == "error" or event.level == "fatal" %}
+                  <span class="badge bg-danger">{{ event.level }}</span>
+                  {% elif event.level == "warning" %}
+                  <span class="badge bg-warning">{{ event.level }}</span>
+                  {% else %}
+                  <span class="badge bg-primary">{{ event.level }}</span>
+                  {% endif %}
+                  {% else %}
+                  <span class="badge bg-secondary">Undefined</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="info-box bg-light">
+                <div class="info-box-content">
+                  <span class="info-box-text text-center text-muted">Status</span>
+                  {% if event.resolved %}
+                  <span class="badge bg-success">Resolved</span>
+                  {% else %}
+                  <span class="badge bg-warning">Unresolved</span>
+                  {% endif %}
+                </div>
+              </div>
             </div>
           </div>
+          <div class="row">
+            <div class="col-12">
+              <span class="badge bg-dark">{% if event.user %}{{ event.user }}{% else %}Unknown user{% endif %}</span>
+              {% if event.runtime_tag_value %}
+              <span class="badge bg-dark">platform:{{ event.platform }}</span>
+              {% endif %}
+              {% if event.environment %}
+              <span class="badge bg-dark">environment:{{ event.environment }}</span>
+              {% endif %}
+              <span class="badge bg-dark">handled:{{ event.handled }}</span>
+              {% if event.level %}
+              <span class="badge bg-dark">level:{{ event.level }}</span>
+              {% endif %}
+              {% if event.logger %}
+              <span class="badge bg-dark">logger:{{ event.logger }}</span>
+              {% endif %}
+              {% if event.mechanism %}
+              <span class="badge bg-dark">mechanism:{{ event.mechanism }}</span>
+              {% endif %}
+              {% if event.runtime_tag_value %}
+              <span class="badge bg-dark">runtime:{{ event.runtime_tag_value }}</span>
+              {% endif %}
+              {% if event.runtime_name %}
+              <span class="badge bg-dark">runtime-name:{{ event.runtime_name }}</span>
+              {% endif %}
+              {% if event.server_name %}
+              <span class="badge bg-dark">server-name:{{ event.server_name }}</span>
+              {% endif %}
+              {% if event.transaction %}
+              <span class="badge bg-dark">transaction:{{ event.transaction }}</span>
+              {% endif %}
+              {% if event.user %}<span class="badge bg-dark">user:{{ event.user }}</span>{% endif %}
+              {% if event.user_defined_tags %}
+              {% for key, value in event.user_defined_tags.items %}
+              <span class="badge bg-dark">{{ key }}:{{ value }}</span>
+              {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Raw event data</h3>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-12">
+                    <pre><code class="language-json">{{ object.raw_event.pretty_json_data }}</code></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
+        <div class="col-2">
+          <h5 class="mt-2 text-muted">Event views</h5>
+          <ul class="list-unstyled">
+            {% if object.issue %}
+            <li>
+              <a href="{% url 'issue-details' object.issue.id %}" class="btn-link text-secondary"><i
+                  class="far fa-fw fa-file-word"></i>Issue</a>
+            </li>
+            {% endif %}
+            <li>
+              <a href="{% url 'event-details' object.id %}" class="btn-link text-secondary"><i
+                  class="far fa-fw fa-file-word"></i>Event details</a>
+            </li>
+          </ul>
+
+          <h5 class="mt-4 text-muted">Event files</h5>
+          <ul class="list-unstyled">
+            <li>
+              <a href="{% url 'event-details-json' object.id %}" class="btn-link text-secondary"><i
+                  class="far fa-fw fa-file-word"></i>raw-event.json</a>
+            </li>
+          </ul>
+
+          <h5 class="mt-4 text-muted">Admin</h5>
+          <ul class="list-unstyled">
+            <li>
+              <a href="{% url 'admin:events_event_change' event.id %}" class="btn-link text-secondary"><i
+                  class="far fa-fw fa-file-word"></i>Event</a>
+            </li>
+            <li>
+              <a href="{% url 'admin:events_rawevent_change' event.raw_event.id %}" class="btn-link text-secondary"><i
+                  class="far fa-fw fa-file-word"></i>Raw Event</a>
+            </li>
+            <li>
+              <a href="{% url 'admin:projects_project_change' event.project.id %}" class="btn-link text-secondary"><i
+                  class="far fa-fw fa-file-word"></i>Project</a>
+            </li>
+          </ul>
+
+          <h5 class="mt-4 text-muted">Action</h5>
+          <ul class="list-unstyled">
+            {% if not event.resolved %}
+            <li>
+              <a href="{% url 'event-set-resolution-status' event_id=event.id %}?resolved=true"
+                class="btn-link text-secondary">Resolve</a>
+            </li>
+            {% else %}
+            <li>
+              <a href="{% url 'event-set-resolution-status' event_id=event.id %}?resolved=false"
+                class="btn-link text-secondary">Unresolve</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
     </div>
+  </div>
+
 
 </div>
 {% endblock %}
