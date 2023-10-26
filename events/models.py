@@ -1,18 +1,37 @@
 import json
 from datetime import datetime, timezone
+from uuid import uuid4
 
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVector
+from django.core.validators import MinLengthValidator
 from django.db import models
 
 from .constants import LOG_LEVELS, SUPPORTED_PLATFORMS
 from .managers import EventManager, IssueManager
 
 
+class Project(models.Model):
+    name = models.CharField(
+        max_length=120,
+        null=False,
+        blank=False,
+        unique=True,
+        validators=(MinLengthValidator(limit_value=1),),
+    )
+    public_key = models.UUIDField(
+        default=uuid4, blank=False, null=False, unique=True
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, blank=False, null=False
+    )
+    updated_at = models.DateTimeField(auto_now=True, blank=False, null=False)
+
+
 class RawEvent(models.Model):
     id = models.UUIDField(blank=False, null=False, primary_key=True)
     project = models.ForeignKey(
-        "projects.Project", blank=False, null=False, on_delete=models.CASCADE
+        "Project", blank=False, null=False, on_delete=models.CASCADE
     )
     data = models.JSONField(blank=False, null=False)
     created_at = models.DateTimeField(
@@ -35,7 +54,7 @@ class Event(models.Model):
     objects = EventManager()
     id = models.UUIDField(blank=False, null=False, primary_key=True)
     project = models.ForeignKey(
-        "projects.Project", blank=False, null=False, on_delete=models.CASCADE
+        "Project", blank=False, null=False, on_delete=models.CASCADE
     )
     issue = models.ForeignKey(
         "Issue",
@@ -190,7 +209,7 @@ class Event(models.Model):
 class Issue(models.Model):
     objects = IssueManager()
     project = models.ForeignKey(
-        "projects.Project", blank=False, null=False, on_delete=models.CASCADE
+        "Project", blank=False, null=False, on_delete=models.CASCADE
     )
     signature = models.CharField(max_length=64, blank=False, null=False)
     primary_event = models.ForeignKey(

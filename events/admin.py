@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Event, Issue, RawEvent
+from .models import Event, Issue, Project, RawEvent
 
 
 class RawEventAdmin(admin.ModelAdmin):
@@ -84,6 +84,16 @@ class IssueAdmin(admin.ModelAdmin):
         return obj.primary_event.message
 
 
+class ProjectAdmin(admin.ModelAdmin):
+    fields = ("name", "public_key", "created_at", "updated_at")
+    readonly_fields = ("public_key", "created_at", "updated_at")
+    list_display = ("name",)
+
+    def has_add_permission(self, request):
+        return False
+
+
+admin.site.register(Project, ProjectAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(RawEvent, RawEventAdmin)
 admin.site.register(Issue, IssueAdmin)

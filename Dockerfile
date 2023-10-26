@@ -2,7 +2,6 @@ FROM python:3.10.12
 WORKDIR /app
 
 ADD vedette /app/vedette
-ADD projects /app/projects
 ADD events /app/events
 ADD web /app/web
 ADD api /app/api

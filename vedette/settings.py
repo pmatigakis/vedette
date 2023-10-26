@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "django.contrib.postgres",
-    "projects",
     "events",
     "api",
     "web",

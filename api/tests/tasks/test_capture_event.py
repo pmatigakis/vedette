@@ -5,8 +5,7 @@ from django.test import TestCase
 
 from api.exceptions import InvalidEventData
 from api.tasks import capture_event
-from events.models import Event, Issue, RawEvent
-from projects.models import Project
+from events.models import Event, Issue, Project, RawEvent
 
 
 class CaptureEventTests(TestCase):

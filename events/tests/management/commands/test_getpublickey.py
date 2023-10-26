@@ -4,7 +4,7 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import TestCase
 
-from projects.tests.factories import ProjectFactory
+from events.tests.factories import ProjectFactory
 
 
 class GetPublicKeyTests(TestCase):

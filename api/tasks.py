@@ -4,8 +4,7 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.db import transaction
 
-from events.models import Issue, RawEvent
-from projects.models import Project
+from events.models import Issue, Project, RawEvent
 
 from .exceptions import (
     EventAlreadyProcessed,

@@ -4,8 +4,7 @@ from uuid import UUID
 from django.test import TestCase
 
 from api.serializers import EventSerializer, RawEventSerializer
-from events.models import Event, RawEvent
-from projects.models import Project
+from events.models import Event, Project, RawEvent
 
 
 class RawEventSerializerTests(TestCase):

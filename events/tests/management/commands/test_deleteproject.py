@@ -4,8 +4,8 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import TestCase
 
-from projects.models import Project
-from projects.tests.factories import ProjectFactory
+from events.models import Project
+from events.tests.factories import ProjectFactory
 
 
 class DeleteProjectTests(TestCase):

@@ -3,7 +3,7 @@ from unittest.mock import patch
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from projects.models import Project
+from events.models import Project
 
 
 class StoreEventTests(TestCase):

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 
-from projects.models import Project
+from events.models import Project
 
 
 class Command(BaseCommand):
@@ -9,12 +9,16 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         name = options["project-name"]
+        self.stdout.write(f"Creating project {name}")
 
-        try:
-            project = Project.objects.get(name=name)
-        except Project.DoesNotExist:
+        if Project.objects.filter(name=name).exists():
             raise CommandError(
-                f"A project with the name '{name}' doesn't exist"
+                f"A project with the name '{name}' already exists"
             )
 
+        project = Project(name=name)
+        project.save()
+
+        self.stdout.write(f"Project id: {project.id}")
+        self.stdout.write(f"Project name: {project.name}")
         self.stdout.write(f"Project public key: {project.public_key}")
