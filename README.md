@@ -28,13 +28,13 @@ change the variables according to your needs.
 Run the database migrations.
 
 ```bash
-docker run --env-file .env vedette migrate
+docker run --rm --env-file .env vedette migrate
 ```
 
 Build the static files.
 
 ```bash
-docker run --env-file .env --mount source=vedette-static,target=/app/static vedette python manage.py collectstatic --noinput --clear 
+docker run --rm --env-file .env --mount source=vedette-static,target=/app/static vedette python manage.py collectstatic --noinput --clear 
 ```
 
 Start the celery worker.
