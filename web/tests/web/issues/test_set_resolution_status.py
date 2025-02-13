@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta, timezone
 
 from django.contrib.auth.models import User
-from django.test import Client, TestCase
+from django.test import Client, TransactionTestCase
 from django.urls import reverse
 
 from events.tests.factories import EventFactory
 
 
-class SetResolutionStatusTests(TestCase):
+class SetResolutionStatusTests(TransactionTestCase):
     def setUp(self):
         super(SetResolutionStatusTests, self).setUp()
         self.username = "admin"
@@ -43,7 +43,7 @@ class SetResolutionStatusTests(TestCase):
             response, reverse("issue-details", kwargs={"pk": event.issue.id})
         )
         self.assertEqual(response.context["issue"], event.issue)
-        self.assertQuerysetEqual(response.context["object_list"], [event])
+        self.assertQuerySetEqual(response.context["object_list"], [event])
         self.assertTemplateUsed("web/issue/details.html")
 
         event.refresh_from_db()
@@ -89,7 +89,7 @@ class SetResolutionStatusTests(TestCase):
         self.assertRedirects(
             response, reverse("issue-details", kwargs={"pk": event.issue.id})
         )
-        self.assertQuerysetEqual(response.context["object_list"], [event])
+        self.assertQuerySetEqual(response.context["object_list"], [event])
         self.assertEqual(response.context["issue"], event.issue)
         self.assertTemplateUsed("web/issues/details.html")
 

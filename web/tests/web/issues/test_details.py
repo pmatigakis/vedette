@@ -1,11 +1,11 @@
 from django.contrib.auth.models import User
-from django.test import Client, TestCase
+from django.test import Client, TransactionTestCase
 from django.urls import reverse
 
 from events.tests.factories import EventFactory
 
 
-class IssueDetailsTests(TestCase):
+class IssueDetailsTests(TransactionTestCase):
     def setUp(self):
         super(IssueDetailsTests, self).setUp()
         self.username = "admin"
@@ -33,7 +33,7 @@ class IssueDetailsTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["issue"], event.issue)
-        self.assertQuerysetEqual(response.context["object_list"], [event])
+        self.assertQuerySetEqual(response.context["object_list"], [event])
         self.assertTemplateUsed("web/issues/details.html")
 
     def test_issue_details_with_unknown_issue(self):

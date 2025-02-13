@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 79
-target-version = ['py39']
+target-version = ['py310']
 extend-exclude = '''
 (
   ^/manage.py
@@ -11,6 +11,13 @@ extend-exclude = '''
   | ^/api/migrations/.*$
 )
 '''
+
+[tool.bandit]
+exclude_dirs = [
+    "web/tests",
+    "api/tests",
+    "events/tests"
+]
 
 [tool.poetry]
 name = "vedette"

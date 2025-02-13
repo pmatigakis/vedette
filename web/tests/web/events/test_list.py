@@ -1,14 +1,14 @@
 from datetime import datetime, timedelta, timezone
 
 from django.contrib.auth.models import User
-from django.test import Client, TestCase
+from django.test import Client, TransactionTestCase
 from django.urls import reverse
 
 from events.models import Event
 from events.tests.factories import EventFactory
 
 
-class EventListTests(TestCase):
+class EventListTests(TransactionTestCase):
     def setUp(self):
         super(EventListTests, self).setUp()
         self.username = "admin"
@@ -31,7 +31,7 @@ class EventListTests(TestCase):
         response = self.client.get(reverse("event-list"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(response.context["object_list"], [])
+        self.assertQuerySetEqual(response.context["object_list"], [])
         self.assertFalse(response.context["page_obj"].has_previous())
         self.assertFalse(response.context["page_obj"].has_next())
         self.assertEqual(response.context["page_obj"].number, 1)
@@ -43,7 +43,7 @@ class EventListTests(TestCase):
         response = self.client.get(reverse("event-list"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(
+        self.assertQuerySetEqual(
             response.context["object_list"], list(Event.objects.all())
         )
         self.assertFalse(response.context["page_obj"].has_previous())
@@ -61,7 +61,7 @@ class EventListTests(TestCase):
         response = self.client.get(reverse("event-list"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(response.context["object_list"], [event])
+        self.assertQuerySetEqual(response.context["object_list"], [event])
         self.assertFalse(response.context["page_obj"].has_previous())
         self.assertFalse(response.context["page_obj"].has_next())
         self.assertEqual(response.context["page_obj"].number, 1)
@@ -77,7 +77,7 @@ class EventListTests(TestCase):
 
         response = self.client.get(reverse("event-list"))
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(response.context["object_list"], events[0:10])
+        self.assertQuerySetEqual(response.context["object_list"], events[0:10])
         self.assertFalse(response.context["page_obj"].has_previous())
         self.assertTrue(response.context["page_obj"].has_next())
         self.assertEqual(response.context["page_obj"].number, 1)
@@ -85,7 +85,7 @@ class EventListTests(TestCase):
 
         response = self.client.get(reverse("event-list"), {"page": 2})
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(
+        self.assertQuerySetEqual(
             response.context["object_list"], events[10:20]
         )
         self.assertTrue(response.context["page_obj"].has_previous())
@@ -95,7 +95,7 @@ class EventListTests(TestCase):
 
         response = self.client.get(reverse("event-list"), {"page": 3})
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(
+        self.assertQuerySetEqual(
             response.context["object_list"], events[20:30]
         )
         self.assertTrue(response.context["page_obj"].has_previous())

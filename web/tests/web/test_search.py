@@ -1,11 +1,11 @@
 from django.contrib.auth.models import User
-from django.test import Client, TestCase
+from django.test import Client, TransactionTestCase
 from django.urls import reverse
 
 from events.tests.factories import IssueFactory
 
 
-class SearchTests(TestCase):
+class SearchTests(TransactionTestCase):
     def setUp(self):
         super(SearchTests, self).setUp()
         self.username = "admin"
@@ -26,9 +26,8 @@ class SearchTests(TestCase):
 
     def test_search_when_there_are_no_events(self):
         response = self.client.get(reverse("search"), {"query": "hello world"})
-
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(response.context["object_list"], [])
+        self.assertQuerySetEqual(response.context["object_list"], [])
         self.assertFalse(response.context["page_obj"].has_previous())
         self.assertFalse(response.context["page_obj"].has_next())
         self.assertEqual(response.context["page_obj"].number, 1)
@@ -44,7 +43,7 @@ class SearchTests(TestCase):
         response = self.client.get(reverse("search"), {"query": "hello"})
 
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(
+        self.assertQuerySetEqual(
             response.context["object_list"],
             [issue_2, issue_1, irrelevant_issue],
         )

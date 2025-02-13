@@ -15,7 +15,6 @@ from os import getenv, environ
 from pathlib import Path
 
 from dotenv import load_dotenv
-import dj_database_url
 
 
 load_dotenv(dotenv_path=getenv("ENV_PATH"))
@@ -29,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = environ["SECRET_KEY"]
+SECRET_KEY = environ.get("SECRET_KEY", "this-is-insecure")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(strtobool(getenv("DEBUG", "false")))
@@ -92,8 +91,19 @@ WSGI_APPLICATION = "vedette.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {"default": dj_database_url.config()}
-
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "HOST": environ.get("DB_HOST", "localhost"),
+        "PORT": int(environ.get("DB_PORT", "5432")),
+        "USER": environ.get("DB_USER", "postgres"),
+        "PASSWORD": environ.get("DB_PASSWORD", "postgres"),
+        "NAME": environ.get("DB_NAME", "vedette"),
+        "TEST": {
+            "NAME": "vedette_test",
+        },
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -144,7 +154,7 @@ LOGIN_REDIRECT_URL = "/"
 
 # celery settings
 CELERY_TIMEZONE = getenv("CELERY_TIMEZONE", "UTC")
-CELERY_BROKER_URL = environ["CELERY_BROKER_URL"]
+CELERY_BROKER_URL = environ.get("CELERY_BROKER_URL")
 
 # search settings
 SEARCH_RESULTS_PER_PAGE = 10

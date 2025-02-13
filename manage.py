@@ -15,10 +15,6 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
-
-    if sys.argv[1] == "test":
-        os.environ.setdefault("ENV_PATH", "envs/env_tests")
-
     execute_from_command_line(sys.argv)
 
 

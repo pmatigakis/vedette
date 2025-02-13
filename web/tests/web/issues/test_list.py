@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta, timezone
 
 from django.contrib.auth.models import User
-from django.test import Client, TestCase
+from django.test import Client, TransactionTestCase
 from django.urls import reverse
 
 from events.tests.factories import IssueFactory, ProjectFactory
 
 
-class IssueListTests(TestCase):
+class IssueListTests(TransactionTestCase):
     def setUp(self):
         super(IssueListTests, self).setUp()
         self.username = "admin"
@@ -30,7 +30,7 @@ class IssueListTests(TestCase):
         response = self.client.get(reverse("issue-list"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(response.context["object_list"], [])
+        self.assertQuerySetEqual(response.context["object_list"], [])
         self.assertFalse(response.context["page_obj"].has_previous())
         self.assertFalse(response.context["page_obj"].has_next())
         self.assertEqual(response.context["page_obj"].number, 1)
@@ -43,7 +43,7 @@ class IssueListTests(TestCase):
         response = self.client.get(reverse("issue-list"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(
+        self.assertQuerySetEqual(
             response.context["object_list"], [issue_2, issue_1]
         )
         self.assertFalse(response.context["page_obj"].has_previous())
@@ -61,7 +61,7 @@ class IssueListTests(TestCase):
         response = self.client.get(reverse("issue-list"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(response.context["object_list"], [issue])
+        self.assertQuerySetEqual(response.context["object_list"], [issue])
         self.assertFalse(response.context["page_obj"].has_previous())
         self.assertFalse(response.context["page_obj"].has_next())
         self.assertEqual(response.context["page_obj"].number, 1)
@@ -77,7 +77,7 @@ class IssueListTests(TestCase):
 
         response = self.client.get(reverse("issue-list"))
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(response.context["object_list"], issues[0:10])
+        self.assertQuerySetEqual(response.context["object_list"], issues[0:10])
         self.assertFalse(response.context["page_obj"].has_previous())
         self.assertTrue(response.context["page_obj"].has_next())
         self.assertEqual(response.context["page_obj"].number, 1)
@@ -85,7 +85,7 @@ class IssueListTests(TestCase):
 
         response = self.client.get(reverse("issue-list"), {"page": 2})
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(
+        self.assertQuerySetEqual(
             response.context["object_list"], issues[10:20]
         )
         self.assertTrue(response.context["page_obj"].has_previous())
@@ -95,7 +95,7 @@ class IssueListTests(TestCase):
 
         response = self.client.get(reverse("issue-list"), {"page": 3})
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(
+        self.assertQuerySetEqual(
             response.context["object_list"], issues[20:30]
         )
         self.assertTrue(response.context["page_obj"].has_previous())
@@ -123,7 +123,7 @@ class IssueListTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(response.context["object_list"], [issue_1])
+        self.assertQuerySetEqual(response.context["object_list"], [issue_1])
         self.assertFalse(response.context["page_obj"].has_previous())
         self.assertFalse(response.context["page_obj"].has_next())
         self.assertEqual(response.context["page_obj"].number, 1)
@@ -136,7 +136,7 @@ class IssueListTests(TestCase):
         response = self.client.get(reverse("issue-list"), {"project": 1000})
 
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(response.context["object_list"], [])
+        self.assertQuerySetEqual(response.context["object_list"], [])
         self.assertFalse(response.context["page_obj"].has_previous())
         self.assertFalse(response.context["page_obj"].has_next())
         self.assertEqual(response.context["page_obj"].number, 1)
