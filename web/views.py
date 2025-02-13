@@ -135,9 +135,9 @@ def search(request):
 
     query = form.cleaned_data["query"]
     search_vector = SearchVector(
-        "primary_event__message",
-        "primary_event__log_message",
-        "primary_event__exception_message",
+        "events__message",
+        "events__log_message",
+        "events__exception_message",
     )
     search_query = SearchQuery(query)
     queryset = Issue.objects.annotate(

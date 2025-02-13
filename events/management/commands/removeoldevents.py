@@ -26,15 +26,14 @@ class Command(BaseCommand):
             tzinfo=timezone.utc
         ) - timedelta(days=days)
 
-        primary_event_query = Issue.objects.exclude(
-            primary_event__isnull=True
-        ).values_list("primary_event", flat=True)
-
+        issues = Issue.objects.all()
+        primary_events = [
+            issue.events.first() for issue in issues if issue.events
+        ]
         qs = (
             RawEvent.objects.values_list("pk")
             .exclude(
-                Q(event__in=primary_event_query)
-                | Q(created_at__gt=before_date)
+                Q(event__in=primary_events) | Q(created_at__gt=before_date)
             )
             .iterator()
         )

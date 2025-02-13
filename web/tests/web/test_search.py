@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.test import Client, TransactionTestCase
 from django.urls import reverse
 
-from events.tests.factories import IssueFactory
+from events.tests.factories import EventFactory
 
 
 class SearchTests(TransactionTestCase):
@@ -34,18 +34,17 @@ class SearchTests(TransactionTestCase):
         self.assertTemplateUsed("web/search.html")
 
     def test_search(self):
-        issue_2 = IssueFactory(primary_event__message="hello world")
-        issue_1 = IssueFactory(primary_event__message="hello world first")
-        irrelevant_issue = IssueFactory(
-            primary_event__message="this is a test"
-        )
+        event_2 = EventFactory(message="hello world")
+        event_1 = EventFactory(message="hello world first")
+        irrelevant_event = EventFactory(message="this is a test")
 
         response = self.client.get(reverse("search"), {"query": "hello"})
 
         self.assertEqual(response.status_code, 200)
         self.assertQuerySetEqual(
             response.context["object_list"],
-            [issue_2, issue_1, irrelevant_issue],
+            # [issue_2, issue_1, irrelevant_issue],
+            [event_2.issue, event_1.issue, irrelevant_event.issue],
         )
 
         self.assertFalse(response.context["page_obj"].has_previous())

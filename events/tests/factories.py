@@ -31,15 +31,14 @@ class RawEventFactory(factory.django.DjangoModelFactory):
     updated_at = factory.LazyAttribute(lambda obj: obj.created_at)
 
 
-class EventIssueFactory(factory.django.DjangoModelFactory):
+class IssueFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Issue
 
     signature = "signature"
-    project = None
+    project = factory.SubFactory(ProjectFactory)
     resolved = False
     resolved_at = None
-    primary_event_id = None
     created_at = factory.LazyFunction(
         lambda: datetime.utcnow().replace(tzinfo=timezone.utc)
     )
@@ -73,26 +72,6 @@ class EventFactory(factory.django.DjangoModelFactory):
     )
     updated_at = factory.LazyAttribute(lambda obj: obj.created_at)
     issue = factory.SubFactory(
-        EventIssueFactory,
+        IssueFactory,
         project=factory.SelfAttribute("..project"),
-        primary_event_id=factory.SelfAttribute("..id"),
     )
-
-
-class IssueFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = Issue
-
-    signature = "signature"
-    project = factory.SubFactory(ProjectFactory)
-    resolved = False
-    resolved_at = None
-    primary_event = factory.SubFactory(
-        EventFactory, project=factory.SelfAttribute("..project"), issue=None
-    )
-    created_at = factory.LazyFunction(
-        lambda: datetime.utcnow().replace(tzinfo=timezone.utc)
-    )
-    updated_at = factory.LazyAttribute(lambda obj: obj.created_at)
-    first_seen_at = factory.LazyAttribute(lambda obj: obj.created_at)
-    last_seen_at = factory.LazyAttribute(lambda obj: obj.created_at)

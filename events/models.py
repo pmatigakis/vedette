@@ -212,13 +212,6 @@ class Issue(models.Model):
         "Project", blank=False, null=False, on_delete=models.CASCADE
     )
     signature = models.CharField(max_length=64, blank=False, null=False)
-    primary_event = models.ForeignKey(
-        "Event",
-        blank=False,
-        null=False,
-        on_delete=models.CASCADE,
-        related_name="primary_issues",
-    )
     resolved = models.BooleanField(blank=False, null=False, default=False)
     created_at = models.DateTimeField(
         auto_now_add=True, blank=False, null=False

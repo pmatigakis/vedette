@@ -68,7 +68,7 @@ class RemoveOldEventsTests(TestCase):
         primary_event_1.save()
         primary_event_1.raw_event.created_at = primary_event_1.created_at
         primary_event_1.raw_event.save()
-        extra_event = EventFactory(issue=primary_event_1.issue)
+        extra_event = EventFactory(issue=None)
         extra_event.created_at = current_datetime - timedelta(days=7)
         extra_event.save()
         extra_event.raw_event.created_at = extra_event.created_at

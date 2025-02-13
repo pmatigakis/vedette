@@ -88,7 +88,6 @@ def capture_event(project_id, public_key, event_data):
             issue = Issue(
                 project=project,
                 signature=signature,
-                primary_event=event,
                 first_seen_at=event.timestamp,
                 last_seen_at=event.timestamp,
             )

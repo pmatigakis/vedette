@@ -56,7 +56,6 @@ class CaptureEventTests(TestCase):
         issues = Issue.objects.all()
         self.assertEqual(len(issues), 1)
         issue = issues[0]
-        self.assertEqual(issue.primary_event, event)
         self.assertEqual(issue.project, self.project)
         self.assertEqual(
             issue.signature,

@@ -58,7 +58,6 @@ class IssueAdmin(admin.ModelAdmin):
     fields = (
         "id",
         "signature",
-        "primary_event",
         "view_project_name",
         "view_message",
         "resolved",
@@ -79,9 +78,9 @@ class IssueAdmin(admin.ModelAdmin):
     def view_project_name(self, obj):
         return obj.project.name
 
-    @admin.display(ordering="primary_event__message", description="Message")
+    @admin.display(description="Message")
     def view_message(self, obj):
-        return obj.primary_event.message
+        return obj.events[0].message if obj.events else f"issue{obj.id}"
 
 
 class ProjectAdmin(admin.ModelAdmin):
