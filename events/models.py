@@ -227,6 +227,10 @@ class Issue(models.Model):
             models.Index(fields=["project_id"], name="ix__issue__project_id")
         ]
 
+    @property
+    def primary_event(self) -> Event | None:
+        return self.events.first()
+
     def resolve(self):
         self.resolved = True
         self.resolved_at = datetime.utcnow().replace(tzinfo=timezone.utc)
