@@ -87,6 +87,7 @@ def capture_event(project_id, public_key, event_data):
         if not issue:
             issue = Issue(
                 project=project,
+                title=event.message,
                 signature=signature,
                 first_seen_at=event.timestamp,
                 last_seen_at=event.timestamp,

@@ -211,6 +211,7 @@ class Issue(models.Model):
     project = models.ForeignKey(
         "Project", blank=False, null=False, on_delete=models.CASCADE
     )
+    title = models.TextField(blank=False, null=False)
     signature = models.CharField(max_length=64, blank=False, null=False)
     resolved = models.BooleanField(blank=False, null=False, default=False)
     created_at = models.DateTimeField(

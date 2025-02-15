@@ -49,7 +49,7 @@ class IssueAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "view_project_name",
-        "view_message",
+        "title",
         "first_seen_at",
         "last_seen_at",
         "resolved",
@@ -59,7 +59,7 @@ class IssueAdmin(admin.ModelAdmin):
         "id",
         "signature",
         "view_project_name",
-        "view_message",
+        "title",
         "resolved",
         "created_at",
         "updated_at",
@@ -77,10 +77,6 @@ class IssueAdmin(admin.ModelAdmin):
     @admin.display(ordering="project__name", description="Project")
     def view_project_name(self, obj):
         return obj.project.name
-
-    @admin.display(description="Message")
-    def view_message(self, obj):
-        return obj.events[0].message if obj.events else f"issue{obj.id}"
 
 
 class ProjectAdmin(admin.ModelAdmin):

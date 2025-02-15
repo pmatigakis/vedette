@@ -19,7 +19,7 @@
         {% for issue in object_list %}
         <tr>
             <td>
-                <span class="fw-bold">{{ issue.primary_event.message }}</span>
+                <span class="fw-bold">{{ issue.title }}</span>
                 {% if issue.primary_event.exception_message %}
                 <br/>
                 <span>{{ issue.primary_event.exception_message }}</span>
